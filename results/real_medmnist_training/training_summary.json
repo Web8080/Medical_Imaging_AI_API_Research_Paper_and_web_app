@@ -1,0 +1,11 @@
+{
+  "chestmnist": {
+    "error": "default_collate: batch must contain tensors, numpy arrays, numbers, dicts or lists; found <class 'PIL.Image.Image'>"
+  },
+  "dermamnist": {
+    "error": "default_collate: batch must contain tensors, numpy arrays, numbers, dicts or lists; found <class 'PIL.Image.Image'>"
+  },
+  "octmnist": {
+    "error": "default_collate: batch must contain tensors, numpy arrays, numbers, dicts or lists; found <class 'PIL.Image.Image'>"
+  }
+}

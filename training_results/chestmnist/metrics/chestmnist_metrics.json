@@ -1,0 +1,15 @@
+{
+  "dataset": "chestmnist",
+  "total_epochs": 3,
+  "final_train_loss": 0.17027501123725833,
+  "final_val_loss": 0.16644882690161467,
+  "final_train_acc": 54.03604016924096,
+  "final_val_acc": 54.10464390765665,
+  "best_val_acc": 54.18486496122649,
+  "best_epoch": 1,
+  "training_time_per_epoch": "~110 seconds (estimated)",
+  "total_training_time": "~5.5 minutes",
+  "model_parameters": "1,148,942",
+  "batch_size": 64,
+  "learning_rate": 0.001
+}

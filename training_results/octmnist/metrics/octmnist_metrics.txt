@@ -1,0 +1,15 @@
+=== OCTMNIST TRAINING RESULTS ===
+
+Dataset: octmnist
+Total Epochs: 3
+Final Training Loss: 0.3494
+Final Validation Loss: 0.3392
+Final Training Accuracy: 87.82%
+Final Validation Accuracy: 88.01%
+Best Validation Accuracy: 88.01%
+Best Epoch: 3
+Model Parameters: 1,148,942
+Batch Size: 64
+Learning Rate: 0.001
+Training Time per Epoch: ~110 seconds (estimated)
+Total Training Time: ~5.5 minutes

@@ -1,0 +1,218 @@
+{
+  "research_paper_config": {
+    "description": "Configuration for research paper methodology implementation",
+    "version": "1.0.0",
+    
+    "datasets": {
+      "brats2021": {
+        "name": "BRATS 2021",
+        "description": "Brain MRI dataset with 1,251 cases",
+        "modality": "MRI",
+        "anatomy": "brain",
+        "task": "segmentation",
+        "voxel_spacing": [1.0, 1.0, 1.0],
+        "intensity_normalization": "z_score",
+        "quality_control": {
+          "min_volume": 100,
+          "max_volume": 1000000,
+          "intensity_range": [-1000, 1000]
+        }
+      },
+      "lidc_idri": {
+        "name": "LIDC-IDRI",
+        "description": "Lung CT dataset with 1,018 cases",
+        "modality": "CT",
+        "anatomy": "lung",
+        "task": "detection",
+        "voxel_spacing": [0.5, 0.5, 1.0],
+        "intensity_normalization": "z_score",
+        "quality_control": {
+          "min_volume": 50,
+          "max_volume": 500000,
+          "intensity_range": [-1000, 1000]
+        }
+      },
+      "medical_decathlon": {
+        "name": "Medical Segmentation Decathlon",
+        "description": "Multi-organ dataset covering 10 anatomical structures",
+        "modality": "CT/MRI",
+        "anatomy": "multi_organ",
+        "task": "segmentation",
+        "voxel_spacing": [1.0, 1.0, 1.0],
+        "intensity_normalization": "z_score",
+        "quality_control": {
+          "min_volume": 100,
+          "max_volume": 1000000,
+          "intensity_range": [-1000, 1000]
+        }
+      }
+    },
+    
+    "models": {
+      "unet_2d": {
+        "architecture": "U-Net",
+        "spatial_dims": 2,
+        "in_channels": 1,
+        "out_channels": 1,
+        "channels": [16, 32, 64, 128, 256],
+        "strides": [2, 2, 2, 2],
+        "num_res_units": 2,
+        "description": "Standard 2D U-Net for segmentation"
+      },
+      "unet_3d": {
+        "architecture": "U-Net",
+        "spatial_dims": 3,
+        "in_channels": 1,
+        "out_channels": 1,
+        "channels": [16, 32, 64, 128, 256],
+        "strides": [2, 2, 2, 2],
+        "num_res_units": 2,
+        "description": "3D U-Net for volumetric segmentation"
+      },
+      "attention_unet": {
+        "architecture": "Attention U-Net",
+        "spatial_dims": 3,
+        "in_channels": 1,
+        "out_channels": 1,
+        "base_features": 64,
+        "attention_gates": true,
+        "description": "U-Net with attention gates for better feature focus"
+      },
+      "nnunet": {
+        "architecture": "nnU-Net",
+        "spatial_dims": 3,
+        "in_channels": 1,
+        "out_channels": 1,
+        "kernel_size": [3, 3, 3, 3, 3],
+        "strides": [1, 2, 2, 2, 2],
+        "upsample_kernel_size": [2, 2, 2, 2],
+        "filters": [32, 64, 128, 256, 512],
+        "norm_name": "instance",
+        "act_name": "leakyrelu",
+        "deep_supervision": true,
+        "deep_supr_num": 3,
+        "description": "Self-configuring nnU-Net framework"
+      },
+      "mask_rcnn": {
+        "architecture": "Mask R-CNN",
+        "backbone": "resnet50",
+        "num_classes": 2,
+        "min_size": 800,
+        "max_size": 1333,
+        "description": "Mask R-CNN for detection and segmentation"
+      },
+      "vision_transformer": {
+        "architecture": "Vision Transformer",
+        "img_size": 224,
+        "patch_size": 16,
+        "in_channels": 1,
+        "num_classes": 2,
+        "embed_dim": 768,
+        "num_heads": 12,
+        "num_layers": 12,
+        "description": "Vision Transformer adapted for medical imaging"
+      }
+    },
+    
+    "training": {
+      "loss_functions": {
+        "segmentation": {
+          "primary": "dice_ce",
+          "dice_weight": 0.5,
+          "ce_weight": 0.5,
+          "smooth_nr": 1e-5,
+          "smooth_dr": 1e-5
+        },
+        "detection": {
+          "primary": "focal",
+          "alpha": 1.0,
+          "gamma": 2.0
+        }
+      },
+      "optimizer": {
+        "type": "adamw",
+        "lr": 1e-4,
+        "weight_decay": 1e-4,
+        "betas": [0.9, 0.999],
+        "eps": 1e-8
+      },
+      "scheduler": {
+        "type": "cosine",
+        "T_max": 100,
+        "eta_min": 1e-6
+      },
+      "augmentation": {
+        "rotation_range": [-15, 15],
+        "flip_prob": 0.5,
+        "elastic_deformation": true,
+        "intensity_variations": true,
+        "noise_std": 0.01
+      },
+      "validation": {
+        "strategy": "5_fold_cv",
+        "stratified": true,
+        "test_size": 0.2,
+        "val_size": 0.2
+      }
+    },
+    
+    "evaluation": {
+      "segmentation_metrics": [
+        "dice_coefficient",
+        "jaccard_index",
+        "hausdorff_distance",
+        "surface_distance"
+      ],
+      "detection_metrics": [
+        "precision",
+        "recall",
+        "f1_score",
+        "average_precision"
+      ],
+      "clinical_metrics": [
+        "volume_estimation_accuracy",
+        "measurement_reproducibility"
+      ],
+      "system_metrics": [
+        "api_response_time",
+        "throughput",
+        "resource_utilization"
+      ]
+    },
+    
+    "api_framework": {
+      "framework": "FastAPI",
+      "model_serving": "TorchServe",
+      "cloud_infrastructure": "AWS",
+      "database": "PostgreSQL",
+      "caching": "Redis",
+      "containerization": "Docker",
+      "authentication": "OAuth2",
+      "rate_limiting": true,
+      "monitoring": true
+    },
+    
+    "compliance": {
+      "hipaa": {
+        "data_encryption": "AES-256",
+        "access_control": "RBAC",
+        "audit_logging": true,
+        "data_anonymization": true
+      },
+      "gdpr": {
+        "data_protection": true,
+        "consent_management": true,
+        "right_to_erasure": true,
+        "data_portability": true
+      }
+    },
+    
+    "scalability": {
+      "horizontal_scaling": true,
+      "auto_scaling": true,
+      "load_balancing": true,
+      "caching_strategy": "multi_level",
+      "container_orchestration": "Kubernetes"
+    }
+  }
+}
