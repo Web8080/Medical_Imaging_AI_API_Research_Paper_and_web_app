@@ -1,0 +1,21 @@
+{
+  "chestmnist_research": {
+    "test_accuracy": 53.171666740961975,
+    "methodology": "research_paper",
+    "dataset": "chestmnist",
+    "num_classes": 14,
+    "input_channels": 1,
+    "model_parameters": 28104382,
+    "architecture": "ResearchPaperCNN",
+    "loss_function": "Combined Dice + CrossEntropy",
+    "optimizer": "AdamW",
+    "scheduler": "CosineAnnealingLR",
+    "augmentation": "Advanced (rotation, flip, color jitter)"
+  },
+  "dermamnist_research": {
+    "error": "Dimension out of range (expected to be in range of [-2, 1], but got 2)"
+  },
+  "octmnist_research": {
+    "error": "Dimension out of range (expected to be in range of [-2, 1], but got 2)"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "dermamnist_advanced": {
+    "test_accuracy": 73.76558603491273,
+    "model_type": "advanced",
+    "dataset": "dermamnist",
+    "num_classes": 7,
+    "input_channels": 3,
+    "model_parameters": 5055879
+  },
+  "dermamnist_efficientnet": {
+    "test_accuracy": 68.37905236907731,
+    "model_type": "efficientnet",
+    "dataset": "dermamnist",
+    "num_classes": 7,
+    "input_channels": 3,
+    "model_parameters": 2449975
+  },
+  "octmnist_advanced": {
+    "test_accuracy": 71.6,
+    "model_type": "advanced",
+    "dataset": "octmnist",
+    "num_classes": 4,
+    "input_channels": 1,
+    "model_parameters": 5048836
+  },
+  "octmnist_efficientnet": {
+    "test_accuracy": 25.0,
+    "model_type": "efficientnet",
+    "dataset": "octmnist",
+    "num_classes": 4,
+    "input_channels": 1,
+    "model_parameters": 2445556
+  }
+}

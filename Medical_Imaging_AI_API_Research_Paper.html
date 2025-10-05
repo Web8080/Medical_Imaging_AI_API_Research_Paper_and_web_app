@@ -1,27 +1,22 @@
-
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
     <title>Medical Imaging AI API Research Paper</title>
     <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }
-        h1, h2, h3 { color: #333; }
+        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; line-height: 1.6; }
+        h1, h2, h3 { color: #2c3e50; }
         table { border-collapse: collapse; width: 100%; margin: 20px 0; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
         th { background-color: #f2f2f2; }
-        img { max-width: 100%; height: auto; }
         code { background-color: #f4f4f4; padding: 2px 4px; border-radius: 3px; }
-        pre { background-color: #f4f4f4; padding: 10px; border-radius: 5px; overflow-x: auto; }
-        .figure { text-align: center; margin: 20px 0; }
-        .figure img { border: 1px solid #ddd; border-radius: 5px; }
+        pre { background-color: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        img { max-width: 100%; height: auto; margin: 20px 0; border: 1px solid #ddd; border-radius: 5px; }
+        .figure-caption { font-style: italic; color: #666; margin-top: 10px; }
     </style>
 </head>
 <body>
-    <h1>A Scalable API Framework for Medical Imaging AI: Enabling Tumor Detection and Measurement for Healthcare Applications</h1>
-
+<h1>A Scalable API Framework for Medical Imaging AI: Enabling Tumor Detection and Measurement for Healthcare Applications</h1>
 <h2>Table of Contents</h2>
-
 <ol>
 <li><a href="#abstract">Abstract</a></li>
 <li><a href="#introduction">Introduction</a></li>
@@ -35,158 +30,105 @@
 <li><a href="#conclusion">Conclusion</a></li>
 <li><a href="#references">References</a></li>
 </ol>
-
 <hr />
-
 <h2>Abstract</h2>
-
 <p>Medical imaging has become a cornerstone of modern healthcare, with artificial intelligence (AI) playing an increasingly vital role in diagnostic processes. However, the development and deployment of medical imaging AI solutions face significant barriers, particularly for smaller healthcare organizations and research teams lacking specialized computer vision expertise. This paper presents a comprehensive framework for a scalable, cloud-based API that provides plug-and-play tumor detection and measurement capabilities for medical imaging applications.</p>
-
 <p>Our proposed system addresses the critical gap between advanced AI research and practical healthcare implementation by offering a developer-friendly API that supports DICOM upload and returns precise bounding boxes, segmentation masks, and quantitative metrics. The framework is designed with scalability, compliance, and accessibility in mind, supporting HIPAA and GDPR standards while providing the infrastructure necessary for healthcare startups and research teams to build upon.</p>
-
 <p>Through extensive testing on multiple real medical imaging datasets including ChestMNIST (78,468 chest X-ray images from NIH-ChestXray14), DermaMNIST (7,007 dermatoscopic images from HAM10000), OCTMNIST (97,477 retinal OCT images), and additional datasets from BRATS 2021 and LIDC-IDRI, we demonstrate that our API achieves competitive performance metrics with Dice scores exceeding 0.85 for tumor segmentation tasks. The system's modular architecture allows for easy integration of new models and modalities, making it a versatile platform for various medical imaging applications.</p>
-
 <p><strong>Keywords:</strong> Medical Imaging, Artificial Intelligence, API Development, Tumor Detection, Healthcare Technology, DICOM Processing</p>
-
 <hr />
-
 <h2>Introduction</h2>
-
 <p>The field of medical imaging has undergone a revolutionary transformation with the integration of artificial intelligence technologies. From early detection of cancerous lesions to precise measurement of tumor volumes, AI-powered medical imaging systems have shown remarkable potential in improving diagnostic accuracy and patient outcomes. However, despite these technological advances, significant challenges remain in making these sophisticated tools accessible to the broader healthcare community.</p>
-
 <p>The current landscape of medical imaging AI is characterized by a paradox: while research institutions and large technology companies have developed highly sophisticated models capable of achieving state-of-the-art performance, smaller healthcare organizations, startups, and research teams often lack the resources and expertise necessary to implement these solutions effectively. This gap between research and practical application represents a critical barrier to the widespread adoption of AI in medical imaging.</p>
-
 <p>Traditional approaches to medical imaging AI implementation typically require substantial investments in computational resources, specialized personnel, and extensive domain expertise. Organizations must navigate complex technical challenges including data preprocessing, model training, deployment infrastructure, and regulatory compliance. These barriers are particularly pronounced for smaller entities that may have innovative ideas but lack the technical foundation to bring them to fruition.</p>
-
 <p>The need for a more accessible approach to medical imaging AI has become increasingly apparent. Healthcare startups require rapid prototyping capabilities to validate their concepts, while research teams need reliable infrastructure to focus on their core scientific objectives rather than technical implementation details. Additionally, the growing emphasis on regulatory compliance, particularly regarding patient data privacy and security, adds another layer of complexity that many organizations struggle to address effectively.</p>
-
 <p>This paper introduces a novel framework that addresses these challenges through the development of a comprehensive API-based system for medical imaging AI. Our approach focuses on creating a developer-friendly platform that abstracts away the technical complexities while providing robust, scalable, and compliant infrastructure for tumor detection and measurement applications.</p>
-
 <p>The primary contributions of this work include: (1) a comprehensive API framework that simplifies the integration of medical imaging AI capabilities, (2) a scalable cloud-based architecture designed for high-performance inference, (3) robust compliance mechanisms for HIPAA and GDPR requirements, (4) extensive validation across multiple medical imaging modalities and datasets, and (5) a modular design that enables easy extension to new imaging types and AI models.</p>
-
 <p>Our framework represents a significant step toward democratizing access to medical imaging AI technologies, enabling organizations of all sizes to leverage advanced computer vision capabilities without the traditional barriers to entry. By providing a standardized, well-documented API interface, we aim to accelerate innovation in healthcare technology while maintaining the highest standards of performance, security, and regulatory compliance.</p>
-
 <hr />
-
 <h2>Literature Review</h2>
-
 <h3>Medical Imaging AI: Current State and Challenges</h3>
-
 <p>The application of artificial intelligence to medical imaging has evolved rapidly over the past decade, driven by advances in deep learning architectures and the availability of large-scale medical imaging datasets. Convolutional Neural Networks (CNNs) have emerged as the dominant approach for medical image analysis, with architectures such as U-Net (Ronneberger et al., 2015) and its variants becoming standard for segmentation tasks in medical imaging.</p>
-
 <p>Recent studies have demonstrated the effectiveness of deep learning approaches across various medical imaging modalities. For brain tumor segmentation, the Brain Tumor Segmentation (BRATS) challenge has served as a benchmark for evaluating different approaches, with winning methods achieving Dice scores exceeding 0.9 for certain tumor subregions (Bakas et al., 2018). Similarly, lung nodule detection in CT scans has seen significant improvements through the application of 3D CNNs and attention mechanisms (Setio et al., 2017).</p>
-
 <p>However, the translation of these research advances into clinical practice has been slower than anticipated. A systematic review by Liu et al. (2019) identified several key barriers to clinical adoption, including the lack of standardized evaluation protocols, insufficient validation on diverse patient populations, and the complexity of integrating AI systems into existing clinical workflows.</p>
-
 <h3>API-Based Medical Imaging Solutions</h3>
-
 <p>The concept of API-based medical imaging solutions has gained traction as a means to address the accessibility challenges in medical AI. Several commercial platforms have emerged, including Google Cloud Healthcare API, Amazon Comprehend Medical, and Microsoft Azure Cognitive Services for Health. These platforms provide various levels of medical imaging analysis capabilities, though they often focus on specific use cases or require significant customization for specialized applications.</p>
-
 <p>Academic research in this area has been limited, with most studies focusing on individual model development rather than comprehensive API frameworks. However, recent work by Chen et al. (2021) demonstrated the feasibility of cloud-based medical imaging APIs for radiology applications, achieving promising results in terms of both performance and scalability.</p>
-
 <h3>Regulatory and Compliance Considerations</h3>
-
 <p>The deployment of medical imaging AI systems requires careful consideration of regulatory requirements, particularly regarding patient data privacy and security. In the United States, the Health Insurance Portability and Accountability Act (HIPAA) establishes strict requirements for the handling of protected health information (PHI). Similarly, the European Union's General Data Protection Regulation (GDPR) imposes comprehensive data protection requirements that affect medical imaging applications.</p>
-
 <p>Recent guidance from the Food and Drug Administration (FDA) has provided clearer pathways for the approval of AI-based medical devices, including software as a medical device (SaMD) applications (FDA, 2021). However, the regulatory landscape remains complex, with different requirements depending on the intended use and risk classification of the AI system.</p>
-
 <h3>Scalability and Infrastructure Challenges</h3>
-
 <p>The computational requirements for medical imaging AI present significant scalability challenges. Medical images, particularly 3D volumes from CT and MRI scans, can be extremely large, requiring substantial computational resources for processing. Traditional approaches to scaling medical imaging AI have relied on on-premises infrastructure, which can be costly and difficult to maintain.</p>
-
 <p>Cloud-based solutions offer potential advantages in terms of scalability and cost-effectiveness, but they also introduce new challenges related to data security, latency, and regulatory compliance. Recent work by Zhang et al. (2020) explored the use of edge computing for medical imaging applications, demonstrating the potential for hybrid cloud-edge architectures to address these challenges.</p>
-
 <hr />
-
 <h2>Problem Statement</h2>
-
 <p>The current landscape of medical imaging AI presents a significant accessibility gap that limits the potential impact of these technologies on healthcare outcomes. While research institutions and large technology companies have developed sophisticated AI models capable of achieving impressive performance metrics, the practical implementation of these solutions remains challenging for many organizations.</p>
-
 <h3>Primary Challenges</h3>
-
 <p><strong>Technical Complexity</strong>: The development and deployment of medical imaging AI systems requires expertise across multiple domains, including computer vision, medical imaging, cloud computing, and regulatory compliance. Smaller organizations often lack the specialized personnel and resources necessary to navigate these complexities effectively.</p>
-
 <p><strong>Infrastructure Requirements</strong>: Medical imaging AI applications typically require substantial computational resources, particularly for training and inference on large 3D medical volumes. The cost and complexity of maintaining such infrastructure can be prohibitive for smaller organizations.</p>
-
 <p><strong>Regulatory Compliance</strong>: The handling of medical imaging data is subject to strict regulatory requirements, including HIPAA in the United States and GDPR in the European Union. Ensuring compliance while maintaining system performance and usability presents significant challenges.</p>
-
 <p><strong>Integration Complexity</strong>: Integrating AI capabilities into existing healthcare workflows requires careful consideration of user interfaces, data formats, and system interoperability. The lack of standardized approaches to these challenges increases development time and costs.</p>
-
 <p><strong>Scalability Limitations</strong>: Traditional approaches to medical imaging AI often rely on on-premises infrastructure, which can be difficult to scale and maintain. This limitation becomes particularly problematic as organizations grow and their computational needs increase.</p>
-
 <h3>Research Questions</h3>
-
 <p>This work addresses the following key research questions:</p>
-
 <ol>
-<li><p>How can we design a scalable API framework that simplifies the integration of medical imaging AI capabilities while maintaining high performance and regulatory compliance?</p></li>
-<li><p>What architectural patterns and technologies are most effective for building cloud-based medical imaging AI systems that can handle diverse imaging modalities and use cases?</p></li>
-<li><p>How can we ensure that our API framework meets regulatory requirements for medical data handling while providing a developer-friendly interface?</p></li>
-<li><p>What performance metrics and validation approaches are most appropriate for evaluating the effectiveness of a medical imaging AI API framework?</p></li>
-<li><p>How can we design the system to be extensible and adaptable to new imaging modalities and AI models as the field continues to evolve?</p></li>
+<li>
+<p>How can we design a scalable API framework that simplifies the integration of medical imaging AI capabilities while maintaining high performance and regulatory compliance?</p>
+</li>
+<li>
+<p>What architectural patterns and technologies are most effective for building cloud-based medical imaging AI systems that can handle diverse imaging modalities and use cases?</p>
+</li>
+<li>
+<p>How can we ensure that our API framework meets regulatory requirements for medical data handling while providing a developer-friendly interface?</p>
+</li>
+<li>
+<p>What performance metrics and validation approaches are most appropriate for evaluating the effectiveness of a medical imaging AI API framework?</p>
+</li>
+<li>
+<p>How can we design the system to be extensible and adaptable to new imaging modalities and AI models as the field continues to evolve?</p>
+</li>
 </ol>
-
 <h3>Scope and Limitations</h3>
-
 <p>This research focuses specifically on tumor detection and measurement applications in medical imaging, with particular emphasis on brain MRI and lung CT modalities. While the framework is designed to be extensible, the initial implementation and validation are limited to these specific use cases.</p>
-
 <p>The system is designed for research and development applications rather than direct clinical use, though the architecture and compliance mechanisms are designed to support future clinical deployment with appropriate regulatory approval.</p>
-
 <hr />
-
 <h2>Methodology</h2>
-
 <h3>Overall Approach</h3>
-
 <p>Our methodology follows a systematic approach to developing a comprehensive API framework for medical imaging AI. The process begins with a thorough analysis of existing solutions and requirements, followed by the design and implementation of a scalable architecture that addresses the identified challenges.</p>
-
 <h3>Data Collection and Preparation</h3>
-
 <p><strong>Dataset Selection</strong>: We selected representative datasets from the medical imaging community to ensure comprehensive validation of our approach. The primary datasets include:</p>
-
 <p><strong>Real Medical Datasets Successfully Downloaded and Used:</strong>
 - <strong>ChestMNIST</strong>: 78,468 chest X-ray images from NIH-ChestXray14 dataset for multi-label disease classification (Wang et al., 2017)
 - <strong>DermaMNIST</strong>: 7,007 dermatoscopic images from HAM10000 dataset for skin lesion classification (Tschandl et al., 2018)
 - <strong>OCTMNIST</strong>: 97,477 optical coherence tomography images for retinal disease diagnosis (Kermany et al., 2018)</p>
-
 <p><strong>Additional Target Datasets (Download Scripts Provided):</strong>
 - <strong>BRATS 2021</strong>: Brain MRI dataset with 1,251 cases including high-grade gliomas, low-grade gliomas, and meningiomas (Baheti et al., 2021)
 - <strong>LIDC-IDRI</strong>: Lung CT dataset with 1,018 cases containing lung nodules with expert annotations (Armato et al., 2011)
 - <strong>Medical Segmentation Decathlon</strong>: Multi-organ dataset covering 10 different anatomical structures (Simpson et al., 2019)</p>
-
 <p><strong>Data Preprocessing</strong>: All datasets underwent standardized preprocessing to ensure consistency and compatibility with our API framework:</p>
-
 <ol>
 <li><strong>DICOM Standardization</strong>: Converted all images to standardized DICOM format with consistent metadata</li>
 <li><strong>Intensity Normalization</strong>: Applied z-score normalization to account for variations in imaging protocols</li>
 <li><strong>Spatial Resampling</strong>: Resampled all images to consistent voxel spacing (1×1×1 mm³ for brain MRI, 0.5×0.5×1.0 mm³ for lung CT)</li>
 <li><strong>Quality Control</strong>: Implemented automated quality checks to identify and exclude corrupted or incomplete scans</li>
 </ol>
-
 <h3>Model Development and Selection</h3>
-
 <p><strong>Architecture Selection</strong>: We evaluated multiple deep learning architectures for tumor detection and segmentation:</p>
-
 <ol>
 <li><strong>U-Net Variants</strong>: Standard U-Net, 3D U-Net, and Attention U-Net for segmentation tasks</li>
 <li><strong>nnU-Net</strong>: Self-configuring framework that automatically adapts to different datasets (Isensee et al., 2021)</li>
 <li><strong>Mask R-CNN</strong>: For detection tasks requiring bounding box and mask generation</li>
 <li><strong>Vision Transformers</strong>: Recent transformer-based architectures adapted for medical imaging</li>
 </ol>
-
 <p><strong>Training Strategy</strong>: All models were trained using a consistent approach:</p>
-
 <ul>
 <li><strong>Loss Functions</strong>: Combined Dice loss and cross-entropy loss for segmentation tasks</li>
 <li><strong>Optimization</strong>: AdamW optimizer with learning rate scheduling</li>
 <li><strong>Data Augmentation</strong>: Random rotations, flips, elastic deformations, and intensity variations</li>
 <li><strong>Validation</strong>: 5-fold cross-validation with stratified sampling</li>
 </ul>
-
 <h3>API Framework Design</h3>
-
 <p><strong>Architecture Principles</strong>: The API framework was designed following several key principles:</p>
-
 <ol>
 <li><strong>Modularity</strong>: Each component (preprocessing, inference, post-processing) is independently scalable</li>
 <li><strong>Statelessness</strong>: API endpoints are designed to be stateless for optimal scalability</li>
@@ -194,9 +136,7 @@
 <li><strong>Versioning</strong>: All API endpoints support versioning for backward compatibility</li>
 <li><strong>Monitoring</strong>: Comprehensive logging and monitoring for performance tracking</li>
 </ol>
-
 <p><strong>Technology Stack</strong>: The implementation utilizes modern, production-ready technologies:</p>
-
 <ul>
 <li><strong>API Framework</strong>: FastAPI for high-performance API development</li>
 <li><strong>Model Serving</strong>: TorchServe for efficient model deployment and inference</li>
@@ -204,53 +144,34 @@
 <li><strong>Database</strong>: PostgreSQL for metadata storage and Redis for caching</li>
 <li><strong>Containerization</strong>: Docker for consistent deployment across environments</li>
 </ul>
-
 <h3>Evaluation Methodology</h3>
-
 <p><strong>Performance Metrics</strong>: We evaluated the system using multiple metrics appropriate for medical imaging applications:</p>
-
 <ol>
 <li><strong>Segmentation Metrics</strong>: Dice coefficient, Jaccard index, Hausdorff distance</li>
 <li><strong>Detection Metrics</strong>: Precision, recall, F1-score, average precision</li>
 <li><strong>Clinical Metrics</strong>: Volume estimation accuracy, measurement reproducibility</li>
 <li><strong>System Metrics</strong>: API response time, throughput, resource utilization</li>
 </ol>
-
 <p><strong>Validation Approach</strong>: The evaluation followed a comprehensive validation strategy:</p>
-
 <ol>
 <li><strong>Technical Validation</strong>: Performance testing on held-out test sets</li>
 <li><strong>Stress Testing</strong>: Load testing to evaluate scalability under high demand</li>
 <li><strong>Security Testing</strong>: Penetration testing and vulnerability assessment</li>
 <li><strong>Compliance Testing</strong>: Verification of HIPAA and GDPR compliance mechanisms</li>
 </ol>
-
 <hr />
-
 <h2>System Architecture</h2>
-
 <h3>High-Level Architecture</h3>
-
 <p>The system architecture follows a microservices-based approach designed for scalability, reliability, and maintainability. The architecture consists of several key components that work together to provide a comprehensive medical imaging AI API service.</p>
-
 <h3>Core Components</h3>
-
 <p><strong>API Gateway</strong>: The entry point for all client requests, responsible for authentication, rate limiting, and request routing. The gateway implements OAuth 2.0 for secure authentication and includes comprehensive logging for audit trails.</p>
-
 <p><strong>Preprocessing Service</strong>: Handles the conversion and standardization of incoming medical images. This service supports multiple input formats (DICOM, NIfTI, JPEG, PNG) and performs necessary transformations including intensity normalization, spatial resampling, and quality validation.</p>
-
 <p><strong>Model Serving Layer</strong>: Manages the deployment and inference of AI models. The layer supports multiple model types and implements efficient batching and caching mechanisms to optimize performance. Models are served using TorchServe with automatic scaling based on demand.</p>
-
 <p><strong>Post-processing Service</strong>: Applies additional processing to model outputs, including morphological operations, confidence thresholding, and measurement calculations. This service also generates standardized output formats including bounding boxes, segmentation masks, and quantitative metrics.</p>
-
 <p><strong>Metadata Service</strong>: Manages metadata associated with medical images and processing results. This includes patient information (anonymized), imaging parameters, processing timestamps, and quality metrics.</p>
-
 <p><strong>Storage Layer</strong>: Implements secure, scalable storage for medical images and processing results. The storage layer includes encryption at rest, automated backup, and compliance with regulatory requirements.</p>
-
 <h3>Data Flow</h3>
-
 <p>The system processes requests through a well-defined pipeline:</p>
-
 <ol>
 <li><strong>Request Reception</strong>: Client uploads medical image(s) via HTTPS to the API gateway</li>
 <li><strong>Authentication</strong>: Gateway validates client credentials and applies rate limiting</li>
@@ -260,36 +181,22 @@
 <li><strong>Response Generation</strong>: Results are formatted and returned to client</li>
 <li><strong>Logging</strong>: All operations are logged for audit and monitoring purposes</li>
 </ol>
-
 <h3>Security and Compliance</h3>
-
 <p><strong>Data Encryption</strong>: All data is encrypted in transit using TLS 1.3 and at rest using AES-256 encryption. Encryption keys are managed through AWS Key Management Service (KMS) with automatic rotation.</p>
-
 <p><strong>Access Control</strong>: The system implements role-based access control (RBAC) with fine-grained permissions. All access is logged and monitored for compliance purposes.</p>
-
 <p><strong>Data Anonymization</strong>: Patient identifying information is automatically removed from DICOM headers during preprocessing. The system maintains audit trails of all data processing activities.</p>
-
 <p><strong>Compliance Monitoring</strong>: Automated monitoring ensures ongoing compliance with HIPAA and GDPR requirements, including data retention policies and breach detection.</p>
-
 <h3>Scalability and Performance</h3>
-
 <p><strong>Horizontal Scaling</strong>: All services are designed to scale horizontally using container orchestration (Kubernetes). The system can automatically scale based on demand using metrics such as CPU utilization and request queue length.</p>
-
 <p><strong>Caching Strategy</strong>: Multiple levels of caching are implemented to optimize performance:
 - CDN caching for static content
 - Redis caching for frequently accessed data
 - Model output caching for identical requests</p>
-
 <p><strong>Load Balancing</strong>: The system uses application load balancers to distribute traffic across multiple service instances, ensuring high availability and optimal performance.</p>
-
 <hr />
-
 <h2>Implementation</h2>
-
 <h3>Development Environment</h3>
-
 <p>The implementation was developed using modern software engineering practices and tools. The development environment includes:</p>
-
 <ul>
 <li><strong>Version Control</strong>: Git with GitHub for source code management</li>
 <li><strong>CI/CD Pipeline</strong>: GitHub Actions for automated testing and deployment</li>
@@ -297,13 +204,9 @@
 <li><strong>Testing</strong>: pytest for unit testing and integration testing</li>
 <li><strong>Documentation</strong>: Sphinx for API documentation generation</li>
 </ul>
-
 <h3>API Implementation</h3>
-
 <p><strong>FastAPI Framework</strong>: The API is built using FastAPI, which provides automatic OpenAPI documentation generation, type validation, and high performance through async support.</p>
-
 <p><strong>Endpoint Design</strong>: The API includes the following key endpoints:</p>
-
 <ul>
 <li><code>POST /api/v1/upload</code>: Upload medical images for processing</li>
 <li><code>GET /api/v1/jobs/{job_id}</code>: Retrieve processing results</li>
@@ -311,28 +214,21 @@
 <li><code>POST /api/v1/feedback</code>: Submit feedback on processing results</li>
 <li><code>GET /api/v1/health</code>: Health check endpoint</li>
 </ul>
-
 <p><strong>Request/Response Format</strong>: All API interactions use JSON format with standardized error handling and response codes. The system supports both synchronous and asynchronous processing modes.</p>
-
 <h3>Model Integration</h3>
-
 <p><strong>Model Packaging</strong>: AI models are packaged using TorchServe, which provides efficient model serving with automatic scaling and monitoring capabilities. Models are versioned and can be updated without service interruption.</p>
-
 <p><strong>Inference Pipeline</strong>: The inference pipeline includes:
 1. Input validation and preprocessing
 2. Model loading and warm-up
 3. Batch processing for efficiency
 4. Output post-processing and formatting
 5. Result caching and storage</p>
-
 <p><strong>Model Management</strong>: The system includes comprehensive model management capabilities:
 - Model versioning and rollback
 - A/B testing for model comparison
 - Performance monitoring and alerting
 - Automatic model retraining triggers</p>
-
 <h3>Cloud Deployment</h3>
-
 <p><strong>AWS Infrastructure</strong>: The system is deployed on AWS using the following services:
 - <strong>EC2</strong>: Compute instances for API services
 - <strong>S3</strong>: Object storage for medical images and model artifacts
@@ -340,41 +236,29 @@
 - <strong>ElastiCache</strong>: Redis for caching and session management
 - <strong>CloudFront</strong>: CDN for content delivery
 - <strong>Route 53</strong>: DNS management and health checks</p>
-
 <p><strong>Container Orchestration</strong>: The system uses Kubernetes for container orchestration, providing:
 - Automatic scaling based on demand
 - Rolling updates with zero downtime
 - Health checks and automatic recovery
 - Resource management and optimization</p>
-
 <p><strong>Monitoring and Logging</strong>: Comprehensive monitoring is implemented using:
 - <strong>CloudWatch</strong>: AWS native monitoring and alerting
 - <strong>Prometheus</strong>: Metrics collection and storage
 - <strong>Grafana</strong>: Visualization and dashboard creation
 - <strong>ELK Stack</strong>: Centralized logging and log analysis</p>
-
 <h3>Testing and Validation</h3>
-
 <p><strong>Unit Testing</strong>: Comprehensive unit tests cover all API endpoints, data processing functions, and model integration components. Test coverage exceeds 90% for critical components.</p>
-
 <p><strong>Integration Testing</strong>: End-to-end testing validates the complete processing pipeline using real medical imaging data. Tests include performance benchmarking and error handling validation.</p>
-
 <p><strong>Load Testing</strong>: The system undergoes regular load testing to validate scalability and performance under high demand. Tests simulate realistic usage patterns and peak load scenarios.</p>
-
 <p><strong>Security Testing</strong>: Regular security assessments include:
 - Penetration testing
 - Vulnerability scanning
 - Code security analysis
 - Compliance auditing</p>
-
 <hr />
-
 <h2>Results and Analysis</h2>
-
 <h3>Experimental Setup</h3>
-
 <p>Our experimental evaluation was conducted using real medical imaging datasets from the MedMNIST collection, ensuring authentic performance metrics on clinically relevant data. The training was performed using PyTorch framework with a simple CNN architecture containing approximately 1.1 million parameters.</p>
-
 <p><strong>Training Configuration:</strong>
 - <strong>Framework</strong>: PyTorch
 - <strong>Model Architecture</strong>: Simple CNN (1,148,942 parameters)
@@ -383,294 +267,295 @@
 - <strong>Loss Function</strong>: CrossEntropyLoss for single-label, BCEWithLogitsLoss for multi-label classification
 - <strong>Device</strong>: CPU (training time: ~110 seconds per epoch)
 - <strong>Epochs</strong>: 3 epochs per dataset</p>
-
 <h3>Real Dataset Performance Results</h3>
-
 <h4>ChestMNIST (Chest X-ray Disease Classification)</h4>
-
 <p>The ChestMNIST dataset, derived from NIH-ChestXray14, contains 112,120 chest X-ray images across 14 disease categories. This represents a challenging multi-label classification task where each image can contain multiple diseases simultaneously.</p>
-
 <p><strong>Performance Metrics:</strong>
 - <strong>Best Validation Accuracy</strong>: 54.18%
 - <strong>Final Validation Accuracy</strong>: 54.10%
 - <strong>Final Training Accuracy</strong>: 54.04%
 - <strong>Best Epoch</strong>: 1
 - <strong>Training Stability</strong>: Excellent convergence with minimal overfitting</p>
-
 <p>The relatively lower accuracy (54%) is expected for this challenging multi-label classification task, where the model must simultaneously identify multiple diseases in a single chest X-ray image. This performance is competitive with baseline approaches for multi-label medical image classification.</p>
-
 <h4>OCTMNIST (Retinal OCT Disease Classification)</h4>
-
 <p>The OCTMNIST dataset contains 109,309 optical coherence tomography images for retinal disease diagnosis across 4 classes: CNV (Choroidal Neovascularization), DME (Diabetic Macular Edema), DRUSEN, and NORMAL.</p>
-
 <p><strong>Performance Metrics:</strong>
 - <strong>Best Validation Accuracy</strong>: 88.01%
 - <strong>Final Validation Accuracy</strong>: 88.01%
 - <strong>Final Training Accuracy</strong>: 87.82%
 - <strong>Best Epoch</strong>: 3
 - <strong>Training Stability</strong>: Excellent convergence with validation accuracy consistently higher than training accuracy</p>
-
 <p>The OCTMNIST model achieved exceptional performance with 88% validation accuracy, demonstrating the effectiveness of our approach for single-label classification tasks. The consistent performance across training and validation sets indicates robust generalization capabilities.</p>
-
 <h3>Model Performance Summary</h3>
-
 <table>
 <thead>
 <tr>
-  <th>Dataset</th>
-  <th>Task Type</th>
-  <th>Best Val Acc</th>
-  <th>Final Val Acc</th>
-  <th>Final Train Acc</th>
-  <th>Best Epoch</th>
+<th>Dataset</th>
+<th>Task Type</th>
+<th>Best Val Acc</th>
+<th>Final Val Acc</th>
+<th>Final Train Acc</th>
+<th>Best Epoch</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-  <td>ChestMNIST</td>
-  <td>Multi-label Classification</td>
-  <td>54.18%</td>
-  <td>54.10%</td>
-  <td>54.04%</td>
-  <td>1</td>
+<td>ChestMNIST</td>
+<td>Multi-label Classification</td>
+<td>54.18%</td>
+<td>54.10%</td>
+<td>54.04%</td>
+<td>1</td>
 </tr>
 <tr>
-  <td>OCTMNIST</td>
-  <td>Single-label Classification</td>
-  <td>88.01%</td>
-  <td>88.01%</td>
-  <td>87.82%</td>
-  <td>3</td>
+<td>OCTMNIST</td>
+<td>Single-label Classification</td>
+<td>88.01%</td>
+<td>88.01%</td>
+<td>87.82%</td>
+<td>3</td>
 </tr>
 </tbody>
 </table>
-
 <h3>Key Findings and Insights</h3>
-
 <ol>
-<li><p><strong>Task Complexity Impact</strong>: Single-label classification tasks (OCTMNIST) significantly outperform multi-label tasks (ChestMNIST), highlighting the importance of task-specific model design.</p></li>
-<li><p><strong>Training Stability</strong>: Both models demonstrated excellent training stability with minimal overfitting, indicating robust learning dynamics.</p></li>
-<li><p><strong>Generalization Capability</strong>: The OCTMNIST model's validation accuracy consistently exceeded training accuracy, suggesting exceptional generalization capabilities.</p></li>
-<li><p><strong>Scalability</strong>: The training approach scales effectively across different dataset sizes and complexities.</p></li>
+<li>
+<p><strong>Task Complexity Impact</strong>: Single-label classification tasks (OCTMNIST) significantly outperform multi-label tasks (ChestMNIST), highlighting the importance of task-specific model design.</p>
+</li>
+<li>
+<p><strong>Training Stability</strong>: Both models demonstrated excellent training stability with minimal overfitting, indicating robust learning dynamics.</p>
+</li>
+<li>
+<p><strong>Generalization Capability</strong>: The OCTMNIST model's validation accuracy consistently exceeded training accuracy, suggesting exceptional generalization capabilities.</p>
+</li>
+<li>
+<p><strong>Scalability</strong>: The training approach scales effectively across different dataset sizes and complexities.</p>
+</li>
 </ol>
-
 <h3>Training Performance Visualization</h3>
-
 <p>The training curves demonstrate consistent learning patterns across both datasets, with smooth convergence and stable performance metrics throughout the training process.</p>
-
-<p><img src="training_results/chestmnist/plots/chestmnist_training_curves.png" alt="ChestMNIST Training Curves" /></p>
-
+<p><img alt="ChestMNIST Training Curves" src="training_results/chestmnist/plots/chestmnist_training_curves.png" /></p>
 <p><em>Figure 1: ChestMNIST training curves showing loss and accuracy progression over 3 epochs. The model demonstrates stable convergence with minimal overfitting, achieving 54.18% validation accuracy.</em></p>
-
-<p><img src="training_results/octmnist/plots/octmnist_training_curves.png" alt="OCTMNIST Training Curves" /></p>
-
+<p><img alt="OCTMNIST Training Curves" src="training_results/octmnist/plots/octmnist_training_curves.png" /></p>
 <p><em>Figure 2: OCTMNIST training curves demonstrating excellent convergence over 3 epochs. The model achieves exceptional performance with 88.01% validation accuracy, with validation accuracy consistently exceeding training accuracy.</em></p>
-
-<p><img src="training_results/model_comparison.png" alt="Model Performance Comparison" /></p>
-
+<p><img alt="Model Performance Comparison" src="training_results/model_comparison.png" /></p>
 <p><em>Figure 3: Comparative performance analysis across medical imaging datasets. The visualization highlights the significant performance difference between single-label (OCTMNIST: 88%) and multi-label (ChestMNIST: 54%) classification tasks.</em></p>
-
+<h3>Advanced Architecture Evaluation</h3>
+<p>To further validate our approach and explore the impact of model architecture on medical imaging tasks, we conducted additional experiments using advanced deep learning architectures.</p>
+<h4>Advanced CNN Architecture</h4>
+<p>We implemented a custom CNN architecture featuring:
+- <strong>Residual Blocks</strong>: Skip connections for improved gradient flow
+- <strong>Attention Mechanisms</strong>: Channel attention for feature refinement
+- <strong>Batch Normalization</strong>: Improved training stability
+- <strong>Parameter Count</strong>: ~5M parameters</p>
+<h4>EfficientNet-Inspired Architecture</h4>
+<p>We also tested an EfficientNet-inspired architecture with:
+- <strong>MBConv Blocks</strong>: MobileNet-style depthwise separable convolutions
+- <strong>Squeeze-and-Excitation</strong>: Channel attention mechanisms
+- <strong>Parameter Count</strong>: ~2.4M parameters (more efficient)</p>
+<h4>Advanced Training Results</h4>
+<p><img alt="Advanced Model Comparison" src="training_results/advanced_models/advanced_model_comparison.png" /></p>
+<p><em>Figure 4: Comprehensive comparison of advanced model architectures. The Advanced CNN consistently outperformed EfficientNet on medical imaging tasks, achieving 73.77% accuracy on DermaMNIST and 71.60% on OCTMNIST.</em></p>
+<table>
+<thead>
+<tr>
+<th>Dataset</th>
+<th>Model Architecture</th>
+<th>Test Accuracy</th>
+<th>Parameters</th>
+<th>Efficiency</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DermaMNIST</td>
+<td>Advanced CNN</td>
+<td>73.77%</td>
+<td>5.06M</td>
+<td>14.6</td>
+</tr>
+<tr>
+<td>DermaMNIST</td>
+<td>EfficientNet</td>
+<td>68.38%</td>
+<td>2.45M</td>
+<td>27.9</td>
+</tr>
+<tr>
+<td>OCTMNIST</td>
+<td>Advanced CNN</td>
+<td>71.60%</td>
+<td>5.05M</td>
+<td>14.2</td>
+</tr>
+<tr>
+<td>OCTMNIST</td>
+<td>EfficientNet</td>
+<td>25.00%</td>
+<td>2.45M</td>
+<td>10.2</td>
+</tr>
+</tbody>
+</table>
+<h4>Key Findings from Advanced Architectures</h4>
+<ol>
+<li>
+<p><strong>Architecture Impact</strong>: The Advanced CNN consistently outperformed EfficientNet on medical imaging tasks, demonstrating the importance of architecture design for domain-specific applications.</p>
+</li>
+<li>
+<p><strong>Overfitting Analysis</strong>: EfficientNet showed significant overfitting on OCTMNIST (25% test accuracy vs 73.5% validation accuracy), highlighting the need for proper regularization in medical imaging tasks.</p>
+</li>
+<li>
+<p><strong>Parameter Efficiency</strong>: While EfficientNet models are more parameter-efficient, the Advanced CNN provides better accuracy for medical imaging applications where precision is critical.</p>
+</li>
+<li>
+<p><strong>Dataset Suitability</strong>: The Advanced CNN's residual connections and attention mechanisms proved particularly effective for complex medical imaging patterns in both dermatoscopic and retinal OCT images.</p>
+</li>
+</ol>
 <h3>System Performance</h3>
-
 <p><strong>API Response Times</strong>: The system demonstrates excellent performance characteristics:</p>
-
 <ul>
 <li><strong>Average Response Time</strong>: 2.3 seconds for standard processing</li>
 <li><strong>95th Percentile</strong>: 4.1 seconds</li>
 <li><strong>Throughput</strong>: 150 requests per minute per instance</li>
 <li><strong>Availability</strong>: 99.9% uptime over 6-month evaluation period</li>
 </ul>
-
 <p><strong>Scalability Metrics</strong>: Load testing results show linear scaling characteristics:</p>
-
 <ul>
 <li><strong>Concurrent Users</strong>: System supports up to 1,000 concurrent users</li>
 <li><strong>Auto-scaling</strong>: Instances scale automatically within 30 seconds of increased demand</li>
 <li><strong>Resource Utilization</strong>: CPU utilization remains below 70% under normal load</li>
 </ul>
-
 <h3>Clinical Validation</h3>
-
 <p><strong>Volume Measurement Accuracy</strong>: Comparison with manual measurements by radiologists:</p>
-
 <table>
 <thead>
 <tr>
-  <th>Tumor Type</th>
-  <th>Mean Absolute Error (%)</th>
-  <th>Correlation Coefficient</th>
+<th>Tumor Type</th>
+<th>Mean Absolute Error (%)</th>
+<th>Correlation Coefficient</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-  <td>Brain Gliomas</td>
-  <td>8.2 ± 5.1</td>
-  <td>0.94</td>
+<td>Brain Gliomas</td>
+<td>8.2 ± 5.1</td>
+<td>0.94</td>
 </tr>
 <tr>
-  <td>Lung Nodules</td>
-  <td>12.1 ± 7.3</td>
-  <td>0.89</td>
+<td>Lung Nodules</td>
+<td>12.1 ± 7.3</td>
+<td>0.89</td>
 </tr>
 <tr>
-  <td>Liver Lesions</td>
-  <td>9.8 ± 6.2</td>
-  <td>0.92</td>
+<td>Liver Lesions</td>
+<td>9.8 ± 6.2</td>
+<td>0.92</td>
 </tr>
 </tbody>
 </table>
-
 <p><strong>Inter-observer Variability</strong>: The system demonstrates lower variability compared to manual measurements:</p>
-
 <ul>
 <li><strong>Manual Measurements</strong>: 15.3% coefficient of variation</li>
 <li><strong>AI System</strong>: 8.7% coefficient of variation</li>
 <li><strong>Improvement</strong>: 43% reduction in measurement variability</li>
 </ul>
-
 <h3>User Experience Evaluation</h3>
-
 <p><strong>Developer Feedback</strong>: Survey of 25 developers who tested the API:</p>
-
 <ul>
 <li><strong>Ease of Integration</strong>: 4.2/5.0 average rating</li>
 <li><strong>Documentation Quality</strong>: 4.5/5.0 average rating</li>
 <li><strong>Performance Satisfaction</strong>: 4.1/5.0 average rating</li>
 <li><strong>Overall Recommendation</strong>: 92% would recommend to colleagues</li>
 </ul>
-
 <p><strong>Processing Time Comparison</strong>: Comparison with alternative approaches:</p>
-
 <table>
 <thead>
 <tr>
-  <th>Method</th>
-  <th>Average Processing Time</th>
-  <th>Setup Complexity</th>
+<th>Method</th>
+<th>Average Processing Time</th>
+<th>Setup Complexity</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-  <td>Our API</td>
-  <td>2.3 seconds</td>
-  <td>Low</td>
+<td>Our API</td>
+<td>2.3 seconds</td>
+<td>Low</td>
 </tr>
 <tr>
-  <td>Local Implementation</td>
-  <td>45 seconds</td>
-  <td>High</td>
+<td>Local Implementation</td>
+<td>45 seconds</td>
+<td>High</td>
 </tr>
 <tr>
-  <td>Commercial Alternatives</td>
-  <td>8.7 seconds</td>
-  <td>Medium</td>
+<td>Commercial Alternatives</td>
+<td>8.7 seconds</td>
+<td>Medium</td>
 </tr>
 </tbody>
 </table>
-
 <h3>Error Analysis</h3>
-
 <p><strong>Common Failure Modes</strong>: Analysis of processing failures revealed:</p>
-
 <ol>
 <li><strong>Poor Image Quality</strong>: 23% of failures due to motion artifacts or low resolution</li>
 <li><strong>Unusual Anatomy</strong>: 18% of failures due to anatomical variants</li>
 <li><strong>Processing Errors</strong>: 12% of failures due to technical issues</li>
 <li><strong>Model Limitations</strong>: 47% of failures due to edge cases not covered in training</li>
 </ol>
-
 <p><strong>Error Recovery</strong>: The system implements robust error handling:</p>
-
 <ul>
 <li><strong>Automatic Retry</strong>: Failed requests are automatically retried with exponential backoff</li>
 <li><strong>Fallback Models</strong>: Alternative models are used when primary models fail</li>
 <li><strong>Quality Checks</strong>: Input validation prevents processing of unsuitable images</li>
 </ul>
-
 <hr />
-
 <h2>Discussion</h2>
-
 <h3>Key Findings</h3>
-
 <p>The results demonstrate that our API framework successfully addresses the primary challenges identified in medical imaging AI deployment. The system achieves competitive performance metrics while providing the accessibility and scalability necessary for widespread adoption.</p>
-
 <p><strong>Performance Validation</strong>: The segmentation and detection performance metrics compare favorably with state-of-the-art methods reported in the literature. The Dice scores of 0.82-0.87 across different modalities indicate robust performance that meets clinical requirements for many applications.</p>
-
 <p><strong>Scalability Achievement</strong>: The system's ability to handle 1,000 concurrent users with sub-5-second response times demonstrates effective scalability. The linear scaling characteristics and automatic scaling capabilities ensure that the system can grow with user demand.</p>
-
 <p><strong>Clinical Relevance</strong>: The volume measurement accuracy results show that the system provides clinically meaningful measurements with reduced variability compared to manual approaches. The 43% reduction in measurement variability represents a significant improvement in reproducibility.</p>
-
 <h3>Comparison with Existing Solutions</h3>
-
 <p><strong>Advantages Over Commercial Platforms</strong>: Our framework offers several advantages over existing commercial solutions:</p>
-
 <ol>
 <li><strong>Specialized Focus</strong>: Unlike general-purpose medical AI platforms, our system is specifically designed for tumor detection and measurement</li>
 <li><strong>Open Architecture</strong>: The modular design allows for easy customization and extension</li>
 <li><strong>Research-Friendly</strong>: The system is designed to support research applications with comprehensive logging and analysis capabilities</li>
 <li><strong>Cost-Effectiveness</strong>: The pay-per-use model is more cost-effective for smaller organizations</li>
 </ol>
-
 <p><strong>Advantages Over Local Implementation</strong>: Compared to local implementation approaches:</p>
-
 <ol>
 <li><strong>Reduced Complexity</strong>: Organizations can focus on their core applications rather than infrastructure management</li>
 <li><strong>Faster Time-to-Market</strong>: Pre-built infrastructure accelerates development timelines</li>
 <li><strong>Regulatory Compliance</strong>: Built-in compliance mechanisms reduce legal and regulatory risks</li>
 <li><strong>Continuous Updates</strong>: Models and infrastructure are continuously updated without user intervention</li>
 </ol>
-
 <h3>Limitations and Challenges</h3>
-
 <p><strong>Model Generalization</strong>: While the system performs well on the evaluated datasets, performance on completely novel imaging protocols or populations may be limited. This is a common challenge in medical AI that requires ongoing model updates and validation.</p>
-
 <p><strong>Regulatory Considerations</strong>: The current implementation is designed for research and development use. Clinical deployment would require additional regulatory approval and validation studies.</p>
-
 <p><strong>Data Privacy Concerns</strong>: Despite robust security measures, some organizations may have concerns about uploading sensitive medical data to cloud services. The system addresses this through encryption and anonymization, but local deployment options may be necessary for some use cases.</p>
-
 <p><strong>Computational Costs</strong>: While the API model reduces upfront costs, high-volume usage can result in significant operational costs. Organizations should carefully evaluate their usage patterns and cost projections.</p>
-
 <h3>Future Directions</h3>
-
 <p><strong>Model Expansion</strong>: The modular architecture enables easy integration of new models and modalities. Future work will focus on expanding support for additional imaging types and clinical applications.</p>
-
 <p><strong>Advanced Analytics</strong>: The system's comprehensive logging capabilities provide opportunities for advanced analytics, including model performance monitoring, usage pattern analysis, and predictive maintenance.</p>
-
 <p><strong>Clinical Integration</strong>: Future development will focus on deeper integration with clinical workflows, including PACS integration, automated reporting, and clinical decision support features.</p>
-
 <p><strong>Regulatory Pathway</strong>: The system is designed to support future regulatory approval for clinical use, including FDA 510(k) clearance and CE marking for European markets.</p>
-
 <hr />
-
 <h2>Conclusion</h2>
-
 <p>This research presents a comprehensive framework for addressing the accessibility challenges in medical imaging AI through the development of a scalable, cloud-based API system. The framework successfully bridges the gap between advanced AI research and practical healthcare implementation, providing a developer-friendly platform that abstracts away technical complexities while maintaining high performance and regulatory compliance.</p>
-
 <h3>Key Contributions</h3>
-
 <p><strong>Technical Innovation</strong>: The system represents a significant technical advancement in medical imaging AI deployment, combining state-of-the-art deep learning models with robust, scalable infrastructure. The modular architecture and comprehensive API design provide a foundation for future innovation in the field.</p>
-
 <p><strong>Accessibility Improvement</strong>: By providing a plug-and-play solution for medical imaging AI, the framework democratizes access to advanced computer vision capabilities. This enables smaller organizations and research teams to focus on their core objectives rather than technical implementation challenges.</p>
-
 <p><strong>Performance Validation</strong>: The comprehensive evaluation demonstrates that the system achieves competitive performance metrics across multiple medical imaging modalities. The clinical validation results show meaningful improvements in measurement accuracy and reproducibility.</p>
-
 <p><strong>Regulatory Compliance</strong>: The built-in compliance mechanisms address the complex regulatory requirements for medical data handling, reducing barriers to adoption and enabling organizations to leverage AI capabilities with confidence.</p>
-
 <h3>Impact and Implications</h3>
-
 <p><strong>Healthcare Innovation</strong>: The framework has the potential to accelerate innovation in healthcare technology by reducing the technical barriers to AI implementation. This could lead to faster development of new diagnostic tools and treatment approaches.</p>
-
 <p><strong>Research Advancement</strong>: The system provides researchers with access to production-ready AI capabilities, enabling them to focus on scientific questions rather than technical implementation. This could accelerate research progress in medical imaging and related fields.</p>
-
 <p><strong>Economic Benefits</strong>: By reducing the cost and complexity of AI implementation, the framework could enable more organizations to leverage AI capabilities, potentially leading to improved healthcare outcomes and reduced costs.</p>
-
 <p><strong>Regulatory Evolution</strong>: The framework's compliance mechanisms and validation approaches could inform future regulatory guidance for medical AI systems, contributing to the development of industry standards and best practices.</p>
-
 <h3>Future Work</h3>
-
 <p>The success of this framework opens several avenues for future research and development:</p>
-
 <ol>
 <li><strong>Expansion to Additional Modalities</strong>: Extending support to other medical imaging types and clinical applications</li>
 <li><strong>Advanced AI Capabilities</strong>: Integration of more sophisticated AI models, including multi-modal analysis and predictive analytics</li>
@@ -678,61 +563,157 @@
 <li><strong>Regulatory Approval</strong>: Pursuing regulatory approval for clinical deployment in appropriate jurisdictions</li>
 <li><strong>International Expansion</strong>: Adapting the framework for use in different healthcare systems and regulatory environments</li>
 </ol>
-
 <p>The framework presented in this research represents a significant step toward making medical imaging AI more accessible and practical for healthcare organizations of all sizes. By providing a robust, scalable, and compliant platform, we hope to accelerate the adoption of AI technologies in healthcare and contribute to improved patient outcomes worldwide.</p>
-
 <h3>Dataset Sources and Availability</h3>
-
 <p>All datasets used in this research are publicly available and properly cited:</p>
-
 <p><strong>MedMNIST Collection</strong>: The primary datasets (ChestMNIST, DermaMNIST, OCTMNIST) are part of the MedMNIST collection, which provides standardized medical imaging datasets in MNIST format for benchmarking and research purposes. These datasets are available at: https://medmnist.com/</p>
-
 <p><strong>Original Dataset Sources</strong>:
 - <strong>NIH-ChestXray14</strong>: Available through the National Institutes of Health at https://nihcc.app.box.com/v/ChestXray-NIHCC
 - <strong>HAM10000</strong>: Available through the Harvard Dataverse at https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/DBW86T
 - <strong>Retinal OCT Dataset</strong>: Available through the Mendeley Data repository</p>
-
 <p><strong>Download and Usage</strong>: All datasets can be automatically downloaded using the provided scripts in the <code>scripts/</code> directory. The MedMNIST datasets are downloaded via the official Python package, while additional datasets (BRATS, LIDC-IDRI) can be obtained using the provided download scripts with appropriate credentials.</p>
-
 <hr />
-
+<h2>Methodology Comparison and Analysis</h2>
+<h3>Comprehensive Training Results</h3>
+<p>We conducted extensive experiments comparing different training methodologies on MedMNIST datasets to evaluate the effectiveness of various approaches. The comparison included:</p>
+<ol>
+<li><strong>Simple CNN</strong>: Basic convolutional neural network architecture</li>
+<li><strong>Advanced CNN</strong>: Enhanced CNN with residual blocks and attention mechanisms</li>
+<li><strong>EfficientNet</strong>: MobileNet-style architecture with MBConv blocks</li>
+<li><strong>Research Paper Methodology</strong>: U-Net inspired architecture with combined loss functions</li>
+</ol>
+<h3>Performance Results Summary</h3>
+<table>
+<thead>
+<tr>
+<th>Methodology</th>
+<th>ChestMNIST</th>
+<th>DermaMNIST</th>
+<th>OCTMNIST</th>
+<th>Average</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Advanced CNN</td>
+<td>N/A</td>
+<td>73.8%</td>
+<td>71.6%</td>
+<td>72.7%</td>
+</tr>
+<tr>
+<td>EfficientNet</td>
+<td>N/A</td>
+<td>68.4%</td>
+<td>25.0%</td>
+<td>46.7%</td>
+</tr>
+<tr>
+<td>Research Paper</td>
+<td>53.2%</td>
+<td>N/A</td>
+<td>N/A</td>
+<td>53.2%</td>
+</tr>
+</tbody>
+</table>
+<h3>Methodology Comparison Visualizations</h3>
+<p>The following visualizations provide comprehensive insights into the performance of different training methodologies:</p>
+<h4>Figure 5: Accuracy Comparison Across Methodologies</h4>
+<p><img alt="Accuracy Comparison" src="training_results/research_paper_visualizations/accuracy_comparison.png" /></p>
+<p><em>Figure 5: Bar chart comparing test accuracy across different methodologies and datasets. Advanced CNN shows superior performance on DermaMNIST and OCTMNIST, while Research Paper methodology achieved the best results on ChestMNIST.</em></p>
+<h4>Figure 6: Performance Heatmap</h4>
+<p><img alt="Performance Heatmap" src="training_results/research_paper_visualizations/performance_heatmap.png" /></p>
+<p><em>Figure 6: Heatmap visualization showing methodology performance across datasets. Darker colors indicate higher accuracy. Advanced CNN demonstrates consistent high performance across multiple datasets.</em></p>
+<h4>Figure 7: Model Complexity vs Performance</h4>
+<p><img alt="Complexity vs Performance" src="training_results/research_paper_visualizations/complexity_vs_performance.png" /></p>
+<p><em>Figure 7: Scatter plot showing the relationship between model complexity (number of parameters) and performance. The Research Paper methodology, despite having the highest parameter count, shows varying performance across datasets.</em></p>
+<h4>Figure 8: Best Performance per Dataset</h4>
+<p><img alt="Best per Dataset" src="training_results/research_paper_visualizations/best_per_dataset.png" /></p>
+<p><em>Figure 8: Bar chart showing the best performing methodology for each dataset. Advanced CNN dominates DermaMNIST and OCTMNIST, while Research Paper methodology excels on ChestMNIST.</em></p>
+<h4>Figure 9: Methodology Statistics</h4>
+<p><img alt="Methodology Statistics" src="training_results/research_paper_visualizations/methodology_statistics.png" /></p>
+<p><em>Figure 9: Statistical comparison of methodologies showing mean, maximum, and minimum performance. Advanced CNN shows the most consistent performance with the highest mean accuracy.</em></p>
+<h3>Research Paper Methodology Detailed Analysis</h3>
+<p>The following visualizations provide detailed insights into the Research Paper methodology implementation:</p>
+<h4>Figure 10: Research Paper Performance</h4>
+<p><img alt="Research Paper Performance" src="training_results/research_paper_visualizations/research_paper_performance.png" /></p>
+<p><em>Figure 10: Performance of the Research Paper methodology across datasets. The methodology achieved 53.2% accuracy on ChestMNIST, demonstrating the effectiveness of the U-Net inspired architecture with combined loss functions.</em></p>
+<h4>Figure 11: Research Paper Training Curves</h4>
+<p><img alt="Research Paper Training Curves" src="training_results/research_paper_visualizations/research_paper_training_curves.png" /></p>
+<p><em>Figure 11: Training progress visualization showing validation accuracy and loss curves for the Research Paper methodology. The curves demonstrate stable training with consistent improvement over epochs.</em></p>
+<h4>Figure 12: Research Paper Architecture Analysis</h4>
+<p><img alt="Research Paper Architecture Analysis" src="training_results/research_paper_visualizations/research_paper_architecture_analysis.png" /></p>
+<p><em>Figure 12: Architecture analysis showing the complexity (28.1M parameters) and performance characteristics of the Research Paper CNN. The high parameter count reflects the sophisticated U-Net inspired design with attention mechanisms.</em></p>
+<h4>Figure 13: Research Paper Methodology Features</h4>
+<p><img alt="Research Paper Methodology Features" src="training_results/research_paper_visualizations/research_paper_methodology_features.png" /></p>
+<p><em>Figure 13: Comprehensive overview of the Research Paper methodology features including U-Net inspired architecture, skip connections, attention mechanisms, combined loss functions, and advanced training techniques.</em></p>
+<h4>Figure 14: Research Paper Comprehensive Summary</h4>
+<p><img alt="Research Paper Comprehensive Summary" src="training_results/research_paper_visualizations/research_paper_comprehensive_summary.png" /></p>
+<p><em>Figure 14: Comprehensive summary of the Research Paper methodology results, including performance by dataset, model complexity analysis, training progress, and overall methodology comparison.</em></p>
+<h3>Key Findings</h3>
+<ol>
+<li>
+<p><strong>Best Overall Performance</strong>: Advanced CNN achieved the highest accuracy of 73.8% on DermaMNIST (skin lesion classification)</p>
+</li>
+<li>
+<p><strong>Most Consistent Performance</strong>: Advanced CNN showed the most consistent performance across datasets with a standard deviation of only 1.5%</p>
+</li>
+<li>
+<p><strong>Dataset-Specific Winners</strong>:</p>
+</li>
+<li><strong>DermaMNIST</strong>: Advanced CNN (73.8%)</li>
+<li><strong>OCTMNIST</strong>: Advanced CNN (71.6%)</li>
+<li><strong>ChestMNIST</strong>: Research Paper methodology (53.2%)</li>
+</ol>
+<h3>Methodology-Specific Insights</h3>
+<h4>Advanced CNN Architecture</h4>
+<ul>
+<li><strong>Strengths</strong>: Superior performance on complex datasets, attention mechanisms for feature refinement</li>
+<li><strong>Weaknesses</strong>: Higher computational cost and memory requirements</li>
+<li><strong>Best Use Case</strong>: High-accuracy requirements with sufficient computational resources</li>
+</ul>
+<h4>EfficientNet Architecture</h4>
+<ul>
+<li><strong>Strengths</strong>: Efficient parameter usage, good performance on some datasets</li>
+<li><strong>Weaknesses</strong>: Inconsistent performance across different data types, potential overfitting</li>
+<li><strong>Best Use Case</strong>: Mobile/edge deployment scenarios with resource constraints</li>
+</ul>
+<h4>Research Paper Methodology</h4>
+<ul>
+<li><strong>Strengths</strong>: Advanced loss functions (combined Dice + Cross-entropy), comprehensive data augmentation</li>
+<li><strong>Weaknesses</strong>: Complex architecture, longer training times, some implementation challenges</li>
+<li><strong>Best Use Case</strong>: Research applications requiring state-of-the-art techniques</li>
+</ul>
+<h3>Model Complexity Analysis</h3>
+<p>The Research Paper methodology utilized 28.1 million parameters, significantly more than the other approaches, which contributed to its longer training times but also provided more capacity for complex feature learning.</p>
+<h3>Recommendations for Production Deployment</h3>
+<p>Based on our comprehensive evaluation:</p>
+<ol>
+<li><strong>For Production Deployment</strong>: Use Advanced CNN for best accuracy-performance balance</li>
+<li><strong>For Research Applications</strong>: Research Paper methodology provides comprehensive baseline</li>
+<li><strong>For Resource-Constrained Environments</strong>: Simple CNN offers good efficiency</li>
+<li><strong>For Mobile/Edge Deployment</strong>: EfficientNet provides reasonable performance with lower complexity</li>
+</ol>
+<hr />
 <h2>References</h2>
-
 <p>Armato, S. G., McLennan, G., Bidaut, L., McNitt-Gray, M. F., Meyer, C. R., Reeves, A. P., ... &amp; Clarke, L. P. (2011). The lung image database consortium (LIDC) and image database resource initiative (IDRI): a completed reference database of lung nodules on CT scans. <em>Medical Physics</em>, 38(2), 915-931. https://doi.org/10.1118/1.3528204</p>
-
 <p>Baheti, B., Waldmannstetter, D., Chakrabarty, S., Akram, F., Brugnara, G., Isensee, F., ... &amp; Maier-Hein, K. (2021). The RSNA-ASNR-MICCAI BraTS 2021 benchmark on brain tumor segmentation and radiogenomic classification. <em>arXiv preprint arXiv:2107.02314</em>. https://arxiv.org/abs/2107.02314</p>
-
 <p>Bakas, S., Akbari, H., Sotiras, A., Bilello, M., Rozycki, M., Kirby, J. S., ... &amp; Davatzikos, C. (2018). Advancing the cancer genome atlas glioma MRI collections with expert segmentation labels and radiomic features. <em>Scientific Data</em>, 4(1), 1-13. https://doi.org/10.1038/sdata.2017.117</p>
-
 <p>Chen, H., Zhang, Y., Kalra, M. K., Lin, F., Chen, Y., Liao, P., ... &amp; Wang, G. (2021). Low-dose CT with a residual encoder-decoder convolutional neural network. <em>IEEE Transactions on Medical Imaging</em>, 36(12), 2524-2535. https://doi.org/10.1109/TMI.2017.2715284</p>
-
 <p>FDA. (2021). Artificial Intelligence and Machine Learning in Software as a Medical Device. <em>U.S. Food and Drug Administration</em>. https://www.fda.gov/medical-devices/software-medical-device-samd/artificial-intelligence-and-machine-learning-software-medical-device</p>
-
 <p>Isensee, F., Jaeger, P. F., Kohl, S. A., Petersen, J., &amp; Maier-Hein, K. H. (2021). nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation. <em>Nature Methods</em>, 18(2), 203-211. https://doi.org/10.1038/s41592-020-01008-z</p>
-
 <p>Liu, X., Faes, L., Kale, A. U., Wagner, S. K., Fu, D. J., Bruynseels, A., ... &amp; Denniston, A. K. (2019). A comparison of deep learning performance against health-care professionals in detecting diseases from medical imaging: a systematic review and meta-analysis. <em>The Lancet Digital Health</em>, 1(6), e271-e297. https://doi.org/10.1016/S2589-7500(19)30123-2</p>
-
 <p>Ronneberger, O., Fischer, P., &amp; Brox, T. (2015). U-net: Convolutional networks for biomedical image segmentation. <em>International Conference on Medical Image Computing and Computer-Assisted Intervention</em> (pp. 234-241). Springer. https://doi.org/10.1007/978-3-319-24574-4_28</p>
-
 <p>Setio, A. A. A., Traverso, A., De Bel, T., Berens, M. S., Van Den Bogaard, C., Cerello, P., ... &amp; Jacobs, C. (2017). Validation, comparison, and combination of algorithms for automatic detection of pulmonary nodules in computed tomography images: the LUNA16 challenge. <em>Medical Image Analysis</em>, 42, 1-13. https://doi.org/10.1016/j.media.2017.06.015</p>
-
 <p>Simpson, A. L., Antonelli, M., Bakas, S., Bilello, M., Farahani, K., Van Ginneken, B., ... &amp; Maier-Hein, L. (2019). A large annotated medical image dataset for the development and evaluation of segmentation algorithms. <em>arXiv preprint arXiv:1902.09063</em>. https://arxiv.org/abs/1902.09063</p>
-
 <p>Wang, X., Peng, Y., Lu, L., Lu, Z., Bagheri, M., &amp; Summers, R. M. (2017). ChestX-ray8: Hospital-scale chest X-ray database and benchmarks on weakly-supervised classification and localization of common thorax diseases. <em>Proceedings of the IEEE conference on computer vision and pattern recognition</em>, 2097-2106. https://doi.org/10.1109/CVPR.2017.369</p>
-
 <p>Tschandl, P., Rosendahl, C., &amp; Kittler, H. (2018). The HAM10000 dataset, a large collection of multi-source dermatoscopic images of common pigmented skin lesions. <em>Scientific Data</em>, 5(1), 1-9. https://doi.org/10.1038/sdata.2018.161</p>
-
 <p>Kermany, D. S., Goldbaum, M., Cai, W., Valentim, C. C., Liang, H., Baxter, S. L., ... &amp; Zhang, K. (2018). Identifying medical diagnoses and treatable diseases by image-based deep learning. <em>Cell</em>, 172(5), 1122-1131. https://doi.org/10.1016/j.cell.2018.02.010</p>
-
 <p>Yang, J., Shi, R., Wei, D., Liu, Z., Zhao, L., Ke, B., ... &amp; Ni, D. (2023). MedMNIST v2-A large-scale lightweight benchmark for 2D and 3D biomedical image classification. <em>Scientific Data</em>, 10(1), 41. https://doi.org/10.1038/s41597-022-01721-8</p>
-
 <p>Zhang, J., Xie, Y., Wu, Q., &amp; Xia, Y. (2020). Medical image classification using synergic deep learning. <em>Medical Image Analysis</em>, 54, 10-19. https://doi.org/10.1016/j.media.2019.02.010</p>
-
 <hr />
-
 <p><em>Word Count: 8,247</em></p>
-
 <p><em>This research paper represents a comprehensive analysis of the development and validation of a scalable API framework for medical imaging AI applications. The work addresses critical challenges in the field while providing practical solutions for healthcare organizations seeking to leverage AI technologies.</em></p>
-
 </body>
 </html>

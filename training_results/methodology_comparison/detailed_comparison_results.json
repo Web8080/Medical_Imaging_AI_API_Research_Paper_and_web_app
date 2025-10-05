@@ -1,0 +1,99 @@
+{
+  "summary": {
+    "total_experiments": 5,
+    "datasets": [
+      "DERMAMNIST",
+      "OCTMNIST",
+      "CHESTMNIST"
+    ],
+    "methodologies": [
+      "Advanced Cnn",
+      "Efficientnet",
+      "Research Paper"
+    ],
+    "best_overall_accuracy": 73.77,
+    "best_methodology": "Advanced Cnn",
+    "best_dataset": "DERMAMNIST"
+  },
+  "detailed_results": [
+    {
+      "Dataset": "DERMAMNIST",
+      "Methodology": "Advanced Cnn",
+      "Accuracy": 73.77,
+      "Parameters": 0,
+      "Key": "dermamnist_advanced_cnn"
+    },
+    {
+      "Dataset": "OCTMNIST",
+      "Methodology": "Advanced Cnn",
+      "Accuracy": 71.6,
+      "Parameters": 0,
+      "Key": "octmnist_advanced_cnn"
+    },
+    {
+      "Dataset": "DERMAMNIST",
+      "Methodology": "Efficientnet",
+      "Accuracy": 68.38,
+      "Parameters": 0,
+      "Key": "dermamnist_efficientnet"
+    },
+    {
+      "Dataset": "OCTMNIST",
+      "Methodology": "Efficientnet",
+      "Accuracy": 25.0,
+      "Parameters": 0,
+      "Key": "octmnist_efficientnet"
+    },
+    {
+      "Dataset": "CHESTMNIST",
+      "Methodology": "Research Paper",
+      "Accuracy": 53.171666740961975,
+      "Parameters": 28104382,
+      "Key": "chestmnist_research"
+    }
+  ],
+  "methodology_stats": {
+    "mean": {
+      "Advanced Cnn": 72.685,
+      "Efficientnet": 46.69,
+      "Research Paper": 53.171666740961975
+    },
+    "std": {
+      "Advanced Cnn": 1.5344217151748143,
+      "Efficientnet": 30.674292167872427,
+      "Research Paper": NaN
+    },
+    "min": {
+      "Advanced Cnn": 71.6,
+      "Efficientnet": 25.0,
+      "Research Paper": 53.171666740961975
+    },
+    "max": {
+      "Advanced Cnn": 73.77,
+      "Efficientnet": 68.38,
+      "Research Paper": 53.171666740961975
+    }
+  },
+  "dataset_stats": {
+    "mean": {
+      "CHESTMNIST": 53.171666740961975,
+      "DERMAMNIST": 71.07499999999999,
+      "OCTMNIST": 48.3
+    },
+    "std": {
+      "CHESTMNIST": NaN,
+      "DERMAMNIST": 3.8113055505954865,
+      "OCTMNIST": 32.951176003293114
+    },
+    "min": {
+      "CHESTMNIST": 53.171666740961975,
+      "DERMAMNIST": 68.38,
+      "OCTMNIST": 25.0
+    },
+    "max": {
+      "CHESTMNIST": 53.171666740961975,
+      "DERMAMNIST": 73.77,
+      "OCTMNIST": 71.6
+    }
+  }
+}
