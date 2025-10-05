@@ -1,6 +1,19 @@
-# Medical Imaging AI API
+# Medical Imaging AI API: A Comprehensive Framework for Automated Medical Image Analysis
 
-A scalable, cloud-based API framework for medical imaging AI applications, specifically designed for tumor detection and measurement capabilities.
+A scalable, cloud-based API framework for medical imaging AI applications, specifically designed for tumor detection and measurement capabilities.  This repository contains a complete implementation of an AI-powered medical imaging analysis system based on my comprehensive research paper "Medical Imaging AI API: A Scalable Framework for Tumor Detection and Measurement in Medical Images" which is also attached to this repository. Please read my research paper for detailed methodology, experimental results, and technical analysis.
+
+The system implements a full-stack solution for medical image analysis, featuring:
+
+- **Advanced AI Models**: State-of-the-art deep learning architectures including Advanced CNN, EfficientNet, and U-Net inspired designs
+- **Multi-Modal Support**: Handles chest X-rays, dermatology images, and retinal OCT scans
+- **Production-Ready API**: FastAPI-based backend with authentication, security, and HIPAA compliance
+- **Comprehensive Evaluation**: Extensive methodology comparison with 13 visualization plots and detailed performance analysis
+- **Real Medical Datasets**: Trained on MedMNIST datasets (ChestMNIST, DermaMNIST, OCTMNIST) with 183,000+ medical images
+- **Docker Deployment**: Complete containerization and cloud deployment configuration
+
+**Key Results**: Advanced CNN achieved 73.8% accuracy on skin lesion classification and 71.6% on retinal disease detection, demonstrating superior performance across multiple medical imaging tasks.
+
+The research paper provides detailed analysis of different training methodologies, architecture comparisons, and recommendations for production deployment in clinical settings.
 
 ## Features
 
