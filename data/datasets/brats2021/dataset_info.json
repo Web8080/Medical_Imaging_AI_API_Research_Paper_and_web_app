@@ -1,0 +1,16 @@
+{
+  "description": "BRATS 2021 Brain Tumor Segmentation Challenge",
+  "source": "https://www.synapse.org/#!Synapse:syn27046444",
+  "modality": "MRI",
+  "anatomy": "Brain",
+  "task": "Segmentation",
+  "total_cases": 1251,
+  "format": "NIfTI",
+  "classes": [
+    "Background",
+    "Necrotic core",
+    "Edema",
+    "Enhancing tumor"
+  ],
+  "size": "~15GB"
+}

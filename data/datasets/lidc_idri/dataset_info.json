@@ -1,0 +1,10 @@
+{
+  "description": "LIDC-IDRI Lung Image Database Consortium",
+  "source": "https://wiki.cancerimagingarchive.net/display/Public/LIDC-IDRI",
+  "modality": "CT",
+  "anatomy": "Lung",
+  "task": "Detection",
+  "total_cases": 1018,
+  "format": "DICOM",
+  "size": "~120GB"
+}

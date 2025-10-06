@@ -37,10 +37,50 @@ All datasets are publicly available and properly cited in our research paper.
 
 ## Quick Start
 
-1. Clone the repository
-2. Set up environment variables
-3. Install dependencies: `pip install -r requirements.txt`
-4. Run the API: `python -m src.main`
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Web8080/Medical_Imaging_AI_API_Research_Paper_and_web_app.git
+   cd Medical_Imaging_AI_API_Research_Paper_and_web_app
+   ```
+
+2. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Start the API server**
+   ```bash
+   python src/api/simple_api_server.py
+   ```
+
+4. **Launch the dashboard**
+   ```bash
+   streamlit run frontend/streamlit_dashboard.py
+   ```
+
+5. **Access the application**
+   - API: http://localhost:8001
+   - Dashboard: http://localhost:8501
+
+## Project Structure
+
+```
+Medical_Imaging_AI_API/
+├── src/                    # Source code
+│   ├── api/               # API implementation
+│   ├── models/            # AI model implementations
+│   ├── data/              # Data processing
+│   └── visualization/     # Visualization utilities
+├── frontend/              # Frontend applications
+├── tests/                 # Test suite
+├── scripts/               # Utility scripts
+├── docs/                  # Documentation
+├── assets/                # Static assets
+├── results/               # Training results
+└── training_results/      # Organized training outputs
+```
+
+For detailed project structure, see [docs/development/PROJECT_STRUCTURE.md](docs/development/PROJECT_STRUCTURE.md).
 
 ## API Endpoints
 

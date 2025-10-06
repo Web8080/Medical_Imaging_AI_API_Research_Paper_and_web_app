@@ -1,0 +1,10 @@
+{
+  "description": "Skin cancer detection dataset",
+  "source": "https://www.kaggle.com/datasets/fanconic/skin-cancer-malignant-vs-benign",
+  "classes": [
+    "benign",
+    "malignant"
+  ],
+  "total_images": 2637,
+  "format": "JPEG"
+}

@@ -1,0 +1,13 @@
+{
+  "description": "Retinal disease classification dataset",
+  "source": "https://www.kaggle.com/datasets/paultimothymooney/retinal-disease-classification",
+  "classes": [
+    "NORMAL",
+    "DIABETIC_RETINOPATHY",
+    "GLAUCOMA",
+    "CATARACT",
+    "AGE_MACULAR_DEGENERATION"
+  ],
+  "total_images": 1000,
+  "format": "JPEG"
+}

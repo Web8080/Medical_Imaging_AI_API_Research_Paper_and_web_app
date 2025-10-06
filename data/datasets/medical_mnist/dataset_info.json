@@ -1,0 +1,15 @@
+{
+  "description": "Medical MNIST dataset for medical image classification",
+  "source": "https://www.kaggle.com/datasets/andrewmvd/medical-mnist",
+  "classes": [
+    "AbdomenCT",
+    "BreastMRI",
+    "CXR",
+    "ChestCT",
+    "Hand",
+    "HeadCT"
+  ],
+  "total_images": 58954,
+  "format": "PNG",
+  "size": "28x28 pixels"
+}

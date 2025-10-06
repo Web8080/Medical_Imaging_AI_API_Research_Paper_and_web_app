@@ -1,0 +1,17 @@
+{
+  "description": "Chest X-ray dataset for pneumonia detection",
+  "source": "https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia",
+  "files": [
+    "chest_xray/train/NORMAL/IM-0001-0001.jpeg",
+    "chest_xray/train/PNEUMONIA/person1_bacteria_1.jpeg",
+    "chest_xray/val/NORMAL/NORMAL2-IM-1427-0001.jpeg",
+    "chest_xray/val/PNEUMONIA/person63_bacteria_306.jpeg",
+    "chest_xray/test/NORMAL/IM-0001-0001.jpeg",
+    "chest_xray/test/PNEUMONIA/person1_bacteria_1.jpeg"
+  ],
+  "classes": [
+    "NORMAL",
+    "PNEUMONIA"
+  ],
+  "total_images": 5856
+}
