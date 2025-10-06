@@ -115,7 +115,12 @@ For detailed project structure, see [docs/development/PROJECT_STRUCTURE.md](docs
 
 ## Documentation
 
-Full API documentation is available at `/docs` when running the server.
+- **API Documentation**: Available at `/docs` when running the server
+- **Research Paper**: [Medical_Imaging_AI_API_Research_Paper.md](research_paper/Medical_Imaging_AI_API_Research_Paper.md)
+- **Project Structure**: [docs/development/PROJECT_STRUCTURE.md](docs/development/PROJECT_STRUCTURE.md)
+- **Business Strategy**: [docs/business/PHASE_9_BUSINESS_STRATEGY.md](docs/business/PHASE_9_BUSINESS_STRATEGY.md)
+- **Market Analysis**: [docs/business/MARKET_ANALYSIS.md](docs/business/MARKET_ANALYSIS.md)
+- **Financial Projections**: [docs/business/FINANCIAL_PROJECTIONS.md](docs/business/FINANCIAL_PROJECTIONS.md)
 
 ## License
 
