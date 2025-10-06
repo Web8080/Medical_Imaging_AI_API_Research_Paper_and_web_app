@@ -177,7 +177,7 @@ def main():
             with col1:
                 st.subheader("Uploaded Image")
                 image = Image.open(uploaded_file)
-                st.image(image, caption="Uploaded Image", use_column_width=True)
+                st.image(image, caption="Uploaded Image", use_container_width=True)
                 
                 # Image information
                 st.info(f"""
@@ -227,7 +227,7 @@ def main():
         if "analysis_results" in st.session_state and st.session_state.analysis_results:
             for i, result in enumerate(reversed(st.session_state.analysis_results)):
                 with st.expander(f"Analysis {len(st.session_state.analysis_results) - i} - {result.get('timestamp', 'Unknown time')}"):
-                    display_analysis_results(result)
+                    display_analysis_results(result, is_history=True)
         else:
             st.info("No analysis results yet. Upload and analyze an image to see results here.")
     
@@ -326,7 +326,7 @@ def main():
         - **Analysis Failed**: Verify image format and model compatibility
         """)
 
-def display_analysis_results(result: Dict[str, Any]):
+def display_analysis_results(result: Dict[str, Any], is_history=False):
     """Display analysis results in a formatted way."""
     
     col1, col2 = st.columns([2, 1])
@@ -365,16 +365,17 @@ def display_analysis_results(result: Dict[str, Any]):
                 df['probability'] = df['probability'].round(3)
                 df.columns = ['Class', 'Probability']
                 
-                st.dataframe(df, use_container_width=True)
-                
-                # Confidence chart
+                # Confidence chart only (removed table as requested)
                 fig = px.bar(df, x='Class', y='Probability', title='Prediction Confidence Scores')
-                fig.update_xaxis(tickangle=45)
-                st.plotly_chart(fig, use_container_width=True)
+                fig.update_layout(xaxis_tickangle=45)
+                # Create unique key using timestamp, result ID, and history flag
+                history_suffix = "_history" if is_history else "_main"
+                unique_key = f"prediction_chart_{id(result)}_{result.get('timestamp', 'unknown')}{history_suffix}"
+                st.plotly_chart(fig, use_container_width=True, key=unique_key)
         
-        if 'measurements' in results:
+        if 'measurements' in result:
             st.subheader("Segmentation Measurements")
-            measurements = results['measurements']
+            measurements = result['measurements']
             
             col1, col2, col3 = st.columns(3)
             with col1:
