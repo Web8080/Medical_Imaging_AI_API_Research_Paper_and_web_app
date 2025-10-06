@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Dict, List, Any, Tuple
 
 # Add src to path
-sys.path.append(str(Path(__file__).parent.parent / 'src'))
+sys.path.append(str(Path(__file__).parent.parent / 'backend'))
 
 import numpy as np
 import torch
@@ -22,10 +22,10 @@ from sklearn.metrics import (
     classification_report, precision_score, recall_score, f1_score
 )
 
-from src.evaluation.metrics import MedicalMetrics
-from src.evaluation.visualizations import TrainingVisualizer
-from src.models.advanced_models import create_model
-from src.services.visualization_service import VisualizationService
+from backend.evaluation.metrics import MedicalMetrics
+from backend.evaluation.visualizations import TrainingVisualizer
+from backend.models.advanced_models import create_model
+from backend.services.visualization_service import VisualizationService
 
 
 class ModelEvaluator:

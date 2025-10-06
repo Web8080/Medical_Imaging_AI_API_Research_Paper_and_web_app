@@ -11,13 +11,13 @@ from pathlib import Path
 from typing import Dict, List, Any
 
 # Add src to path
-sys.path.append(str(Path(__file__).parent.parent / 'src'))
+sys.path.append(str(Path(__file__).parent.parent))
 
-from src.data.dataset_downloader import MedicalDatasetDownloader
-from src.training.trainer import AdvancedTrainer
-from src.evaluation.metrics import MedicalMetrics
-from src.evaluation.visualizations import TrainingVisualizer
-from src.models.advanced_models import create_model, create_ensemble
+from backend.data.dataset_downloader import MedicalDatasetDownloader
+from backend.training.trainer import AdvancedTrainer
+from backend.evaluation.metrics import MedicalMetrics
+from backend.evaluation.visualizations import TrainingVisualizer
+from backend.models.advanced_models import create_model, create_ensemble
 
 import torch
 import torch.nn as nn

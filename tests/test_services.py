@@ -6,9 +6,9 @@ import pytest
 import numpy as np
 from unittest.mock import Mock, patch
 
-from src.services.dicom_processor import DICOMProcessor
-from src.services.model_service import ModelService
-from src.services.job_service import JobService
+from backend.services.dicom_processor import DICOMProcessor
+from backend.services.model_service import ModelService
+from backend.services.job_service import JobService
 
 
 class TestDICOMProcessor:

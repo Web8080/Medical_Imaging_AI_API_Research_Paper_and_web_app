@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 # Add project paths
-sys.path.append('src')
+sys.path.append('backend')
 sys.path.append('api')
 
 def load_trained_model(model_path, model_type='simple_cnn'):
@@ -23,7 +23,7 @@ def load_trained_model(model_path, model_type='simple_cnn'):
     try:
         if 'chestmnist' in model_path.lower():
             # Load simple CNN model for ChestMNIST
-            from src.models.simple_cnn import SimpleCNN
+            from backend.models.simple_cnn import SimpleCNN
             model = SimpleCNN(num_classes=14, input_channels=1)  # ChestMNIST has 14 classes
             checkpoint = torch.load(model_path, map_location='cpu')
             model.load_state_dict(checkpoint['model_state_dict'])
@@ -31,7 +31,7 @@ def load_trained_model(model_path, model_type='simple_cnn'):
             return model
         elif 'research' in model_path.lower():
             # Load Research Paper model
-            from src.models.research_paper_cnn import ResearchPaperCNN
+            from backend.models.research_paper_cnn import ResearchPaperCNN
             model = ResearchPaperCNN(num_classes=14, input_channels=1)
             checkpoint = torch.load(model_path, map_location='cpu')
             model.load_state_dict(checkpoint['model_state_dict'])
@@ -39,7 +39,7 @@ def load_trained_model(model_path, model_type='simple_cnn'):
             return model
         elif 'advanced' in model_path.lower():
             # Load Advanced CNN model
-            from src.models.advanced_cnn import AdvancedCNN
+            from backend.models.advanced_cnn import AdvancedCNN
             model = AdvancedCNN(num_classes=7, input_channels=3)  # DermaMNIST has 7 classes, RGB
             checkpoint = torch.load(model_path, map_location='cpu')
             model.load_state_dict(checkpoint['model_state_dict'])
@@ -47,7 +47,7 @@ def load_trained_model(model_path, model_type='simple_cnn'):
             return model
         elif 'efficientnet' in model_path.lower():
             # Load EfficientNet model
-            from src.models.efficientnet import EfficientNetModel
+            from backend.models.efficientnet import EfficientNetModel
             model = EfficientNetModel(num_classes=7, input_channels=3)  # DermaMNIST has 7 classes, RGB
             checkpoint = torch.load(model_path, map_location='cpu')
             model.load_state_dict(checkpoint['model_state_dict'])

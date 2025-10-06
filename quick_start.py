@@ -21,7 +21,7 @@ def main():
     # Start API server
     print("📡 Starting API server...")
     api_process = subprocess.Popen([
-        sys.executable, "organized_scripts/api_servers/simple_api_server.py"
+        sys.executable, "backend/api/simple_api_server.py"
     ], cwd=os.getcwd())
     
     time.sleep(3)
@@ -30,7 +30,7 @@ def main():
     print("📊 Starting Streamlit dashboard...")
     streamlit_process = subprocess.Popen([
         sys.executable, "-m", "streamlit", "run", 
-        "frontend/streamlit_dashboard.py", 
+        "frontend/streamlit/streamlit_dashboard.py", 
         "--server.port", "8501", 
         "--server.address", "0.0.0.0"
     ], cwd=os.getcwd())

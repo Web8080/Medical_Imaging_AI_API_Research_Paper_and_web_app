@@ -12,9 +12,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from src.main import app
-from src.core.database import get_db, Base
-from src.core.config import settings
+from backend.main import app
+from backend.core.database import get_db, Base
+from backend.core.config import settings
 
 
 # Test database URL

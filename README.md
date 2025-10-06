@@ -50,12 +50,12 @@ All datasets are publicly available and properly cited in our research paper.
 
 3. **Start the API server**
    ```bash
-   python src/api/simple_api_server.py
+   python backend/api/simple_api_server.py
    ```
 
 4. **Launch the dashboard**
    ```bash
-   streamlit run frontend/streamlit_dashboard.py
+   streamlit run frontend/streamlit/streamlit_dashboard.py
    ```
 
 5. **Access the application**
@@ -66,18 +66,24 @@ All datasets are publicly available and properly cited in our research paper.
 
 ```
 Medical_Imaging_AI_API/
-├── src/                    # Source code
-│   ├── api/               # API implementation
-│   ├── models/            # AI model implementations
-│   ├── data/              # Data processing
-│   └── visualization/     # Visualization utilities
-├── frontend/              # Frontend applications
-├── tests/                 # Test suite
-├── scripts/               # Utility scripts
-├── docs/                  # Documentation
-├── assets/                # Static assets
-├── results/               # Training results
-└── training_results/      # Organized training outputs
+├── backend/               # Backend code
+│   ├── api/              # API implementation
+│   ├── models/           # AI model implementations
+│   ├── data/             # Data processing
+│   ├── visualization/    # Visualization utilities
+│   ├── core/             # Core backend services
+│   ├── services/         # Business logic services
+│   └── schemas/          # Data schemas
+├── frontend/             # Frontend applications
+│   ├── streamlit/        # Streamlit dashboard
+│   └── react/            # React web application
+├── tests/                # Test suite
+├── scripts/              # Utility scripts
+├── docs/                 # Documentation
+├── assets/               # Static assets
+├── research_paper/       # Research paper files
+├── results/              # Training results
+└── training_results/     # Organized training outputs
 ```
 
 For detailed project structure, see [docs/development/PROJECT_STRUCTURE.md](docs/development/PROJECT_STRUCTURE.md).
