@@ -50,7 +50,7 @@ All datasets are publicly available and properly cited in our research paper.
 
 3. **Start the API server**
    ```bash
-   python backend/api/simple_api_server.py
+   python backend/api/working_api_server.py
    ```
 
 4. **Launch the dashboard**
@@ -61,6 +61,15 @@ All datasets are publicly available and properly cited in our research paper.
 5. **Access the application**
    - API: http://localhost:8001
    - Dashboard: http://localhost:8501
+
+## Current Status
+
+✅ **Fully Functional System**
+- API server running with real AI model predictions
+- Streamlit dashboard with interactive visualizations
+- Real-time metrics tracking and system monitoring
+- Support for multiple medical image formats (PNG, JPG, JPEG, DCM, NII, NII.GZ)
+- Working prediction charts and confidence scores
 
 ## Project Structure
 
@@ -98,11 +107,11 @@ For detailed project structure, see [docs/development/PROJECT_STRUCTURE.md](docs
 
 ## API Endpoints
 
-- `POST /api/v1/upload` - Upload medical images for processing
-- `GET /api/v1/jobs/{job_id}` - Retrieve processing results
-- `GET /api/v1/models` - List available AI models
-- `POST /api/v1/feedback` - Submit feedback on results
-- `GET /api/v1/health` - Health check
+- `POST /upload` - Upload medical images for processing
+- `GET /models` - List available AI models
+- `GET /metrics` - Get real-time system metrics
+- `GET /health` - Health check
+- `GET /` - API information and status
 
 ## Documentation
 

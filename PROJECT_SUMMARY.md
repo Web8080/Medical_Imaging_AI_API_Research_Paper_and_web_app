@@ -15,7 +15,8 @@ We have successfully built a comprehensive **Medical Imaging AI API** that provi
 
 ### 2. **Production-Ready API Framework**
 - **FastAPI-based** RESTful API with automatic documentation
-- **Scalable microservices architecture**
+- **Working API server** (`backend/api/working_api_server.py`) with real predictions
+- **Real-time metrics tracking** and system monitoring
 - **Comprehensive error handling** and logging
 - **Health monitoring** and metrics collection
 
@@ -197,7 +198,7 @@ cd API_for_Medical_Imaging
 pip install -r requirements.txt
 
 # 2. Start API server
-python backend/api/simple_api_server.py
+python backend/api/working_api_server.py
 
 # 3. Launch dashboard
 streamlit run frontend/streamlit/streamlit_dashboard.py
