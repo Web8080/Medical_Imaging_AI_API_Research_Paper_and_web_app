@@ -7,7 +7,7 @@ We have successfully built a comprehensive **Medical Imaging AI API** that provi
 ## ✅ What We've Built
 
 ### 1. **Complete Research Paper** (8,247 words)
-- **File**: `Medical_Imaging_AI_API_Research_Paper.md`
+- **File**: `research_paper/Medical_Imaging_AI_API_Research_Paper.md`
 - Comprehensive academic paper with real references
 - Covers methodology, system architecture, results, and analysis
 - Human-like writing style with proper citations
@@ -155,21 +155,36 @@ We have successfully built a comprehensive **Medical Imaging AI API** that provi
 
 ```
 API_for_Medical_Imaging/
-├── 📄 Medical_Imaging_AI_API_Research_Paper.md  # Research paper
-├── 📁 src/                                      # Source code
-│   ├── 📁 api/v1/endpoints/                    # API endpoints
-│   ├── 📁 core/                                # Core functionality
-│   ├── 📁 models/                              # Database models
-│   ├── 📁 schemas/                             # API schemas
-│   ├── 📁 services/                            # Business logic
-│   └── 📄 main.py                              # Application entry
-├── 📁 tests/                                   # Test suite
-├── 📁 docs/                                    # Documentation
-├── 📁 scripts/                                 # Utility scripts
-├── 🐳 docker-compose.yml                       # Docker services
-├── 🐳 Dockerfile                               # Docker image
-├── 📋 requirements.txt                         # Dependencies
-└── 🔧 Makefile                                 # Development commands
+├── 📁 backend/                                 # Backend code
+│   ├── 📁 api/                                # API implementation
+│   ├── 📁 models/                             # AI model implementations
+│   ├── 📁 data/                               # Data processing
+│   ├── 📁 visualization/                      # Visualization utilities
+│   ├── 📁 core/                               # Core backend services
+│   ├── 📁 services/                           # Business logic services
+│   └── 📁 schemas/                            # Data schemas
+├── 📁 frontend/                               # Frontend applications
+│   ├── 📁 streamlit/                          # Streamlit dashboard
+│   └── 📁 react/                              # React web application
+├── 📁 research_paper/                         # Research paper files
+├── 📁 tests/                                  # Test suite
+├── 📁 scripts/                                # Utility scripts
+├── 📁 docs/                                   # Documentation
+│   ├── 📁 api/                                # API documentation
+│   ├── 📁 deployment/                         # Deployment guides
+│   ├── 📁 development/                        # Development guides
+│   └── 📁 audit_reports/                      # Project audit reports
+├── 📁 assets/                                 # Static assets
+│   ├── 📁 images/                             # Project images
+│   ├── 📁 icons/                              # Icons and logos
+│   ├── 📁 test_images/                        # Test images
+│   └── 📁 UI_UX_Screenshots/                  # UI/UX screenshots
+├── 📁 results/                                # Training results
+├── 📁 training_results/                       # Organized training outputs
+├── 🐳 docker-compose.yml                      # Docker services
+├── 🐳 Dockerfile                              # Docker image
+├── 📋 requirements.txt                        # Dependencies
+└── 🔧 setup.py                                # Python package setup
 ```
 
 ## 🚀 Getting Started
@@ -179,13 +194,17 @@ API_for_Medical_Imaging/
 # 1. Clone and setup
 git clone <repository>
 cd API_for_Medical_Imaging
-./scripts/setup.sh
+pip install -r requirements.txt
 
-# 2. Start services
-make docker-up
+# 2. Start API server
+python backend/api/simple_api_server.py
 
-# 3. Access API
-curl http://localhost:8000/api/v1/health
+# 3. Launch dashboard
+streamlit run frontend/streamlit/streamlit_dashboard.py
+
+# 4. Access services
+# API: http://localhost:8001
+# Dashboard: http://localhost:8501
 ```
 
 ### **Development**

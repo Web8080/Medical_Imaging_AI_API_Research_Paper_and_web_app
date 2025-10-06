@@ -80,7 +80,15 @@ Medical_Imaging_AI_API/
 ├── tests/                # Test suite
 ├── scripts/              # Utility scripts
 ├── docs/                 # Documentation
+│   ├── api/              # API documentation
+│   ├── deployment/       # Deployment guides
+│   ├── development/      # Development guides
+│   └── audit_reports/    # Project audit reports
 ├── assets/               # Static assets
+│   ├── images/           # Project images
+│   ├── icons/            # Icons and logos
+│   ├── test_images/      # Test images
+│   └── UI_UX_Screenshots/ # UI/UX screenshots
 ├── research_paper/       # Research paper files
 ├── results/              # Training results
 └── training_results/     # Organized training outputs

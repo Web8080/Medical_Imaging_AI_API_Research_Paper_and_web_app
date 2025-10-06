@@ -14,14 +14,13 @@ Medical_Imaging_AI_API/
 ├── docker-compose.yml                # Docker orchestration
 ├── Dockerfile                        # Docker container definition
 │
-├── src/                              # Source code (main package)
+├── backend/                          # Backend code (main package)
 │   ├── __init__.py
 │   ├── api/                          # API implementation
 │   │   ├── __init__.py
 │   │   ├── main.py                   # Main FastAPI application
 │   │   ├── simple_api_server.py      # Simplified API server
-│   │   ├── models/                   # API model definitions
-│   │   ├── preprocessing/            # Data preprocessing
+│   │   ├── v1/                       # API version 1
 │   │   └── utils/                    # API utilities
 │   │
 │   ├── models/                       # AI model implementations
@@ -33,44 +32,80 @@ Medical_Imaging_AI_API/
 │   │
 │   ├── data/                         # Data processing
 │   │   ├── __init__.py
-│   │   ├── download_datasets.py      # Dataset download scripts
+│   │   ├── dataset_downloader.py     # Dataset download scripts
 │   │   └── preprocessing.py          # Data preprocessing utilities
 │   │
-│   └── visualization/                # Visualization utilities
+│   ├── visualization/                # Visualization utilities
+│   │   ├── __init__.py
+│   │   ├── generate_training_visualizations.py # Training visualization
+│   │   ├── visualize_advanced_results.py      # Results analysis plots
+│   │   └── generate_methodology_comparison.py # Methodology comparison plots
+│   │
+│   ├── core/                         # Core backend services
+│   │   ├── __init__.py
+│   │   ├── config.py                 # Configuration management
+│   │   ├── database.py               # Database connection
+│   │   └── security.py               # Security utilities
+│   │
+│   ├── services/                     # Business logic services
+│   │   ├── __init__.py
+│   │   ├── model_service.py          # Model management
+│   │   ├── dicom_processor.py        # DICOM processing
+│   │   └── job_service.py            # Job management
+│   │
+│   └── schemas/                      # Data schemas
 │       ├── __init__.py
-│       ├── training_plots.py         # Training visualization
-│       ├── results_analysis.py       # Results analysis plots
-│       └── methodology_comparison.py # Methodology comparison plots
+│       └── api.py                    # API schemas
 │
 ├── frontend/                         # Frontend applications
-│   ├── streamlit_dashboard.py        # Streamlit dashboard
-│   ├── requirements.txt              # Frontend dependencies
-│   └── react-app/                    # React web application
+│   ├── streamlit/                    # Streamlit dashboard
+│   │   ├── streamlit_dashboard.py    # Main dashboard
+│   │   ├── minimal_dashboard.py      # Minimal dashboard variant
+│   │   ├── requirements.txt          # Frontend dependencies
+│   │   └── README.md                 # Frontend documentation
+│   │
+│   └── react/                        # React web application
 │       ├── package.json
 │       ├── src/
 │       └── public/
 │
 ├── tests/                            # Test suite
-│   ├── unit/                         # Unit tests
-│   ├── integration/                  # Integration tests
 │   ├── test_complete_pipeline.py     # End-to-end tests
-│   └── simple_pipeline_demo.py       # Demo scripts
+│   ├── test_services.py              # Service tests
+│   ├── test_api.py                   # API tests
+│   ├── test_streamlit.py             # Streamlit tests
+│   ├── simple_pipeline_demo.py       # Demo scripts
+│   └── conftest.py                   # Test configuration
 │
 ├── scripts/                          # Utility scripts
 │   ├── launch_ui.py                  # UI launcher
 │   ├── start_web_interface.py        # Web interface starter
-│   └── quick_start.py                # Quick start script
+│   ├── quick_start.py                # Quick start script
+│   └── evaluate_models.py            # Model evaluation script
 │
 ├── docs/                             # Documentation
 │   ├── api/                          # API documentation
 │   ├── deployment/                   # Deployment guides
 │   ├── development/                  # Development guides
-│   └── PROJECT_STRUCTURE.md          # This file
+│   │   └── PROJECT_STRUCTURE.md      # This file
+│   └── audit_reports/                # Project audit reports
+│       ├── PROJECT_AUDIT_REPORT.md   # First audit report
+│       └── SECOND_AUDIT_REPORT.md    # Second audit report
 │
 ├── assets/                           # Static assets
 │   ├── images/                       # Project images
 │   ├── icons/                        # Icons and logos
+│   ├── test_images/                  # Test images
+│   │   ├── test_medmnist_chest.png   # MedMNIST test image
+│   │   └── test_medical_image.png    # Medical test image
 │   └── UI_UX_Screenshots/            # UI/UX screenshots
+│       ├── UI_UX_dashboard.png       # Dashboard screenshot
+│       ├── result_history.png        # Results history screenshot
+│       └── documentation.png         # Documentation screenshot
+│
+├── research_paper/                   # Research paper files
+│   ├── Medical_Imaging_AI_API_Research_Paper.md  # Research paper (Markdown)
+│   └── Medical_Imaging_AI_API_Research_Paper.html # Research paper (HTML)
 │
 ├── results/                          # Training results
 │   ├── real_medmnist_training/       # MedMNIST training results
