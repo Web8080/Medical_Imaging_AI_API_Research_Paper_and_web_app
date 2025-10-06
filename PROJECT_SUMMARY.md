@@ -113,16 +113,16 @@ We have successfully built a comprehensive **Medical Imaging AI API** that provi
 ## 📊 Performance Metrics
 
 ### **System Performance**
-- **Response Time**: < 2.3 seconds average
-- **Throughput**: 150 requests/minute per instance
-- **Availability**: 99.9% uptime target
+- **Target Response Time**: < 5 seconds average
+- **Target Throughput**: > 100 requests/minute per instance
+- **Target Availability**: > 99% uptime
 - **Scalability**: Horizontal scaling with Kubernetes
 
-### **AI Model Performance**
-- **Dice Score**: 0.82-0.87 across modalities
-- **Precision**: 0.84-0.89 for detection tasks
-- **Volume Accuracy**: < 12% error vs manual measurements
-- **Processing Time**: < 5 seconds per scan
+### **AI Model Performance (MedMNIST Results)**
+- **ChestMNIST**: 53.2% accuracy (Research Paper methodology)
+- **DermaMNIST**: 73.8% accuracy (Advanced CNN), 68.4% accuracy (EfficientNet)
+- **OCTMNIST**: 71.6% accuracy (Advanced CNN), 25.0% accuracy (EfficientNet)
+- **Note**: Clinical validation and segmentation metrics not yet measured
 
 ## 🛠️ Technology Stack
 

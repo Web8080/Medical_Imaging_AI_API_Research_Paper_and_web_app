@@ -10,9 +10,9 @@ This report compares the performance of different training methodologies on MedM
 
 ## Dataset Overview
 
-- **ChestMNIST**: 14-class chest X-ray pathology classification (78,468 train samples)
-- **DermaMNIST**: 7-class skin lesion classification (7,007 train samples)  
-- **OCTMNIST**: 4-class retinal OCT classification (97,477 train samples)
+- **ChestMNIST**: 14-class chest X-ray pathology classification (112,120 total samples)
+- **DermaMNIST**: 7-class skin lesion classification (10,015 total samples)  
+- **OCTMNIST**: 4-class retinal OCT classification (109,309 total samples)
 
 ## Performance Results
 
@@ -39,9 +39,9 @@ This report compares the performance of different training methodologies on MedM
 
 ### Model Complexity Analysis
 
-- **Advanced Cnn**: 0 ± 0 parameters
-- **Efficientnet**: 0 ± 0 parameters
-- **Research Paper**: 28,104,382 ± nan parameters
+- **Advanced Cnn**: ~5.0M parameters (5,055,879 for DermaMNIST, 5,048,836 for OCTMNIST)
+- **Efficientnet**: ~2.4M parameters (2,449,975 for DermaMNIST, 2,445,556 for OCTMNIST)
+- **Research Paper**: ~28M parameters (28,104,382 for ChestMNIST)
 
 
 ## Methodology-Specific Insights

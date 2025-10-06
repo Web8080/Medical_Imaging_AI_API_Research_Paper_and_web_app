@@ -31,11 +31,11 @@ import hashlib
 import secrets
 
 # Import our trained models
-from models.model_loader import ModelLoader
-from preprocessing.image_processor import ImageProcessor
-from utils.security import SecurityManager
-from utils.database import DatabaseManager
-from utils.metrics import MetricsCalculator
+from .models.model_loader import ModelLoader
+from .preprocessing.image_processor import ImageProcessor
+from .utils.security import SecurityManager
+from .utils.database import DatabaseManager
+from .utils.metrics import MetricsCalculator
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

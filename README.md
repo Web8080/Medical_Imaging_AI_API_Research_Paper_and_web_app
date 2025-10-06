@@ -28,10 +28,10 @@ The research paper provides detailed analysis of different training methodologie
 
 This project uses real medical imaging datasets from the MedMNIST collection:
 
-- **ChestMNIST**: 78,468 chest X-ray images from NIH-ChestXray14 dataset for multi-label disease classification
-- **DermaMNIST**: 7,007 dermatoscopic images from HAM10000 dataset for skin lesion classification  
-- **OCTMNIST**: 97,477 optical coherence tomography images for retinal disease diagnosis
-- **Additional datasets**: BRATS 2021, LIDC-IDRI, Medical Segmentation Decathlon (download scripts provided)
+- **ChestMNIST**: 112,120 chest X-ray images from NIH-ChestXray14 dataset for multi-label disease classification
+- **DermaMNIST**: 10,015 dermatoscopic images from HAM10000 dataset for skin lesion classification  
+- **OCTMNIST**: 109,309 optical coherence tomography images for retinal disease diagnosis
+- **Additional datasets**: BRATS 2021, LIDC-IDRI, Medical Segmentation Decathlon (download scripts provided, referenced for methodology development)
 
 All datasets are publicly available and properly cited in our research paper.
 

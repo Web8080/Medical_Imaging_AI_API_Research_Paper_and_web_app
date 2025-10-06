@@ -7,9 +7,11 @@ This folder contains the implementation of methodologies specifically described 
 Based on the research paper, this implementation follows these specific approaches:
 
 ### 1. Dataset Selection
-- **BRATS 2021**: Brain MRI dataset with 1,251 cases
-- **LIDC-IDRI**: Lung CT dataset with 1,018 cases  
-- **Medical Segmentation Decathlon**: Multi-organ dataset
+- **BRATS 2021**: Brain MRI dataset with 1,251 cases (referenced for methodology development)
+- **LIDC-IDRI**: Lung CT dataset with 1,018 cases (referenced for methodology development)
+- **Medical Segmentation Decathlon**: Multi-organ dataset (referenced for methodology development)
+
+**Note**: These datasets are referenced for methodology development but were not used in actual training experiments due to data access limitations. The implementation focuses on MedMNIST datasets for actual training.
 
 ### 2. Data Preprocessing
 - DICOM Standardization with consistent metadata
