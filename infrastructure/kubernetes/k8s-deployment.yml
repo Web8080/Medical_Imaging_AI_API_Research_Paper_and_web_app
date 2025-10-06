@@ -1,0 +1,342 @@
+# Kubernetes deployment configuration for Medical Imaging AI API
+# This is a placeholder configuration for future Kubernetes deployment
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: medical-imaging-api
+  labels:
+    name: medical-imaging-api
+
+---
+# ConfigMap for application configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: medical-imaging-api-config
+  namespace: medical-imaging-api
+data:
+  ENVIRONMENT: "production"
+  LOG_LEVEL: "INFO"
+  MODEL_PATH: "/app/models"
+  CACHE_TTL: "3600"
+  MAX_UPLOAD_SIZE: "10MB"
+
+---
+# Secret for sensitive configuration
+apiVersion: v1
+kind: Secret
+metadata:
+  name: medical-imaging-api-secrets
+  namespace: medical-imaging-api
+type: Opaque
+data:
+  # Base64 encoded values (replace with actual values)
+  DATABASE_URL: "cG9zdGdyZXM6Ly91c2VyOnBhc3N3b3JkQGRiOjU0MzIvbWVkaWNhbF9pbWFnaW5nX2FwaQ=="
+  REDIS_URL: "cmVkaXM6Ly9yZWRpczozNjc5"
+  API_KEY: "eW91ci1hcGkta2V5LWhlcmU="
+
+---
+# Persistent Volume for model storage
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: model-storage-pv
+  namespace: medical-imaging-api
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-storage
+  nfs:
+    server: your-nfs-server.com
+    path: /path/to/models
+
+---
+# Persistent Volume Claim
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: model-storage-pvc
+  namespace: medical-imaging-api
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: nfs-storage
+
+---
+# Deployment for API server
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: medical-imaging-api
+  namespace: medical-imaging-api
+  labels:
+    app: medical-imaging-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: medical-imaging-api
+  template:
+    metadata:
+      labels:
+        app: medical-imaging-api
+    spec:
+      containers:
+      - name: medical-imaging-api
+        image: medical-imaging-ai-api:latest
+        ports:
+        - containerPort: 8001
+          name: http
+        env:
+        - name: ENVIRONMENT
+          valueFrom:
+            configMapKeyRef:
+              name: medical-imaging-api-config
+              key: ENVIRONMENT
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: medical-imaging-api-config
+              key: LOG_LEVEL
+        - name: MODEL_PATH
+          valueFrom:
+            configMapKeyRef:
+              name: medical-imaging-api-config
+              key: MODEL_PATH
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: medical-imaging-api-secrets
+              key: DATABASE_URL
+        - name: REDIS_URL
+          valueFrom:
+            secretKeyRef:
+              name: medical-imaging-api-secrets
+              key: REDIS_URL
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: medical-imaging-api-secrets
+              key: API_KEY
+        volumeMounts:
+        - name: model-storage
+          mountPath: /app/models
+        - name: logs
+          mountPath: /app/logs
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8001
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+      volumes:
+      - name: model-storage
+        persistentVolumeClaim:
+          claimName: model-storage-pvc
+      - name: logs
+        emptyDir: {}
+      imagePullSecrets:
+      - name: registry-secret
+
+---
+# Service for API server
+apiVersion: v1
+kind: Service
+metadata:
+  name: medical-imaging-api-service
+  namespace: medical-imaging-api
+  labels:
+    app: medical-imaging-api
+spec:
+  selector:
+    app: medical-imaging-api
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8001
+    protocol: TCP
+  type: ClusterIP
+
+---
+# Ingress for external access
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: medical-imaging-api-ingress
+  namespace: medical-imaging-api
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+spec:
+  tls:
+  - hosts:
+    - api.medical-imaging-api.com
+    secretName: medical-imaging-api-tls
+  rules:
+  - host: api.medical-imaging-api.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: medical-imaging-api-service
+            port:
+              number: 80
+
+---
+# Horizontal Pod Autoscaler
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: medical-imaging-api-hpa
+  namespace: medical-imaging-api
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: medical-imaging-api
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+
+---
+# Pod Disruption Budget
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: medical-imaging-api-pdb
+  namespace: medical-imaging-api
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: medical-imaging-api
+
+---
+# Network Policy for security
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: medical-imaging-api-netpol
+  namespace: medical-imaging-api
+spec:
+  podSelector:
+    matchLabels:
+      app: medical-imaging-api
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 8001
+  egress:
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 5432  # PostgreSQL
+    - protocol: TCP
+      port: 6379  # Redis
+    - protocol: TCP
+      port: 443   # HTTPS
+    - protocol: TCP
+      port: 80    # HTTP
+
+---
+# ServiceMonitor for Prometheus monitoring
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: medical-imaging-api-monitor
+  namespace: medical-imaging-api
+  labels:
+    app: medical-imaging-api
+spec:
+  selector:
+    matchLabels:
+      app: medical-imaging-api
+  endpoints:
+  - port: http
+    path: /metrics
+    interval: 30s
+
+---
+# CronJob for model updates
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: model-updater
+  namespace: medical-imaging-api
+spec:
+  schedule: "0 2 * * *"  # Run daily at 2 AM
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: model-updater
+            image: medical-imaging-ai-api:latest
+            command:
+            - /bin/bash
+            - -c
+            - |
+              echo "Checking for model updates..."
+              # Add model update logic here
+              python scripts/update_models.py
+            env:
+            - name: MODEL_PATH
+              value: "/app/models"
+            volumeMounts:
+            - name: model-storage
+              mountPath: /app/models
+          volumes:
+          - name: model-storage
+            persistentVolumeClaim:
+              claimName: model-storage-pvc
+          restartPolicy: OnFailure

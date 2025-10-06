@@ -1,163 +1,132 @@
 """
-Pytest configuration and fixtures.
+Pytest configuration and fixtures for Medical Imaging AI API tests.
 """
 
-import os
-import tempfile
-from typing import Generator
-
 import pytest
+import asyncio
+import sys
+import os
+from pathlib import Path
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import StaticPool
+from unittest.mock import Mock, patch
 
-from backend.main import app
-from backend.core.database import get_db, Base
-from backend.core.config import settings
+# Add project root to path
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
 
-
-# Test database URL
-SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
-
-# Create test engine
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    connect_args={"check_same_thread": False},
-    poolclass=StaticPool,
-)
-
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-
-def override_get_db():
-    """Override database dependency for testing."""
-    try:
-        db = TestingSessionLocal()
-        yield db
-    finally:
-        db.close()
+# Import the API server
+try:
+    from backend.api.working_api_server import app
+except ImportError:
+    # Fallback for different import paths
+    sys.path.append(str(project_root / "backend"))
+    from api.working_api_server import app
 
 
 @pytest.fixture(scope="session")
-def db_engine():
-    """Create test database engine."""
-    Base.metadata.create_all(bind=engine)
-    yield engine
-    Base.metadata.drop_all(bind=engine)
-
-
-@pytest.fixture(scope="function")
-def db_session(db_engine):
-    """Create test database session."""
-    connection = db_engine.connect()
-    transaction = connection.begin()
-    session = TestingSessionLocal(bind=connection)
-    
-    yield session
-    
-    session.close()
-    transaction.rollback()
-    connection.close()
-
-
-@pytest.fixture(scope="function")
-def client(db_session):
-    """Create test client."""
-    app.dependency_overrides[get_db] = lambda: db_session
-    
-    with TestClient(app) as test_client:
-        yield test_client
-    
-    app.dependency_overrides.clear()
+def event_loop():
+    """Create an instance of the default event loop for the test session."""
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+    yield loop
+    loop.close()
 
 
 @pytest.fixture
-def sample_dicom_file():
-    """Create a sample DICOM file for testing."""
-    import pydicom
-    import numpy as np
-    from pydicom.dataset import Dataset, FileDataset
-    
-    # Create a simple DICOM dataset
-    ds = Dataset()
-    ds.PatientName = "Test^Patient"
-    ds.PatientID = "TEST001"
-    ds.StudyDate = "20230101"
-    ds.StudyTime = "120000"
-    ds.Modality = "MR"
-    ds.SeriesDescription = "Test Series"
-    ds.Rows = 256
-    ds.Columns = 256
-    ds.BitsAllocated = 16
-    ds.BitsStored = 16
-    ds.HighBit = 15
-    ds.PixelRepresentation = 0
-    ds.PhotometricInterpretation = "MONOCHROME2"
-    ds.SamplesPerPixel = 1
-    ds.PlanarConfiguration = 0
-    
-    # Create pixel data
-    pixel_array = np.random.randint(0, 4096, (256, 256), dtype=np.uint16)
-    ds.PixelData = pixel_array.tobytes()
-    
-    # Create temporary file
-    with tempfile.NamedTemporaryFile(suffix=".dcm", delete=False) as tmp_file:
-        ds.save_as(tmp_file.name)
-        yield tmp_file.name
-    
-    # Clean up
-    os.unlink(tmp_file.name)
+def client():
+    """Create a test client for the FastAPI application."""
+    return TestClient(app)
 
 
 @pytest.fixture
-def sample_image_file():
-    """Create a sample image file for testing."""
-    from PIL import Image
-    import numpy as np
-    
-    # Create a simple test image
-    image_array = np.random.randint(0, 255, (256, 256, 3), dtype=np.uint8)
-    image = Image.fromarray(image_array)
-    
-    # Create temporary file
-    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp_file:
-        image.save(tmp_file.name)
-        yield tmp_file.name
-    
-    # Clean up
-    os.unlink(tmp_file.name)
+def sample_image_bytes():
+    """Create sample image bytes for testing."""
+    # This would be replaced with actual test image data
+    return b"fake_image_data"
 
 
 @pytest.fixture
-def mock_model_service():
-    """Mock model service for testing."""
-    from unittest.mock import Mock
-    
-    mock_service = Mock()
-    mock_service.get_available_models.return_value = [
-        {
-            "model_id": "test_model",
-            "config": {
-                "type": "pytorch",
-                "task_type": "segmentation",
-                "input_size": [256, 256]
-            },
-            "loaded_at": 1234567890
+def mock_model():
+    """Create a mock model for testing."""
+    mock_model = Mock()
+    mock_model.eval.return_value = None
+    mock_model.return_value = Mock()
+    return mock_model
+
+
+@pytest.fixture
+def sample_prediction_response():
+    """Sample prediction response for testing."""
+    return {
+        "predicted_class": "Test Class",
+        "confidence": 0.85,
+        "all_predictions": [
+            {"class": "Test Class", "probability": 0.85},
+            {"class": "Other Class", "probability": 0.15}
+        ],
+        "top5_predictions": [
+            {"class": "Test Class", "probability": 0.85},
+            {"class": "Other Class", "probability": 0.15}
+        ],
+        "model_info": {
+            "name": "Test Model",
+            "type": "test",
+            "version": "1.0.0",
+            "description": "Test model for unit testing"
         }
-    ]
-    
-    return mock_service
+    }
 
 
 @pytest.fixture
-def mock_redis():
-    """Mock Redis client for testing."""
-    from unittest.mock import Mock
-    
-    mock_redis = Mock()
-    mock_redis.get.return_value = None
-    mock_redis.setex.return_value = True
-    mock_redis.ping.return_value = True
-    
-    return mock_redis
+def sample_metrics_response():
+    """Sample metrics response for testing."""
+    return {
+        "api_status": "healthy",
+        "models_loaded": True,
+        "uptime": "0:05:30",
+        "total_requests": 10,
+        "successful_requests": 9,
+        "failed_requests": 1,
+        "error_rate": 0.1,
+        "average_response_time": "0.25s",
+        "memory_usage": "45.2%",
+        "cpu_usage": "12.8%"
+    }
+
+
+@pytest.fixture(autouse=True)
+def setup_test_environment():
+    """Set up test environment before each test."""
+    # Set test environment variables
+    os.environ["TESTING"] = "true"
+    yield
+    # Cleanup after test
+    if "TESTING" in os.environ:
+        del os.environ["TESTING"]
+
+
+@pytest.fixture
+def temp_model_file(tmp_path):
+    """Create a temporary model file for testing."""
+    model_file = tmp_path / "test_model.pth"
+    model_file.write_bytes(b"fake_model_data")
+    return str(model_file)
+
+
+# Pytest configuration
+def pytest_configure(config):
+    """Configure pytest with custom markers."""
+    config.addinivalue_line(
+        "markers", "slow: marks tests as slow (deselect with '-m \"not slow\"')"
+    )
+    config.addinivalue_line(
+        "markers", "integration: marks tests as integration tests"
+    )
+    config.addinivalue_line(
+        "markers", "unit: marks tests as unit tests"
+    )
+    config.addinivalue_line(
+        "markers", "api: marks tests as API tests"
+    )
+    config.addinivalue_line(
+        "markers", "model: marks tests as model tests"
+    )

@@ -1,0 +1,329 @@
+name: Medical Imaging AI API - CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: '3.9'
+  NODE_VERSION: '18'
+
+jobs:
+  # Code Quality and Linting
+  code-quality:
+    runs-on: ubuntu-latest
+    name: Code Quality & Linting
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install black flake8 mypy pytest pytest-cov
+        
+    - name: Run Black (Code Formatting)
+      run: black --check --diff backend/ frontend/ tests/ scripts/
+      
+    - name: Run Flake8 (Linting)
+      run: flake8 backend/ frontend/ tests/ scripts/ --max-line-length=88 --extend-ignore=E203,W503
+      
+    - name: Run MyPy (Type Checking)
+      run: mypy backend/ --ignore-missing-imports
+      
+    - name: Check import sorting
+      run: |
+        pip install isort
+        isort --check-only --diff backend/ frontend/ tests/ scripts/
+
+  # Unit and Integration Testing
+  testing:
+    runs-on: ubuntu-latest
+    name: Testing
+    needs: code-quality
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-cov pytest-asyncio httpx
+        
+    - name: Run Unit Tests
+      run: |
+        pytest tests/ -v --cov=backend --cov-report=xml --cov-report=html
+        
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
+  # API Testing
+  api-testing:
+    runs-on: ubuntu-latest
+    name: API Testing
+    needs: testing
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-asyncio httpx
+        
+    - name: Start API Server
+      run: |
+        python backend/api/working_api_server.py &
+        sleep 10
+        
+    - name: Test API Health
+      run: |
+        curl -f http://localhost:8001/health || exit 1
+        
+    - name: Test API Endpoints
+      run: |
+        pytest tests/api/ -v --tb=short
+
+  # Security Scanning
+  security:
+    runs-on: ubuntu-latest
+    name: Security Scanning
+    needs: code-quality
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install bandit safety
+        
+    - name: Run Bandit Security Scan
+      run: bandit -r backend/ -f json -o bandit-report.json || true
+      
+    - name: Run Safety Check
+      run: safety check --json --output safety-report.json || true
+      
+    - name: Upload security reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: security-reports
+        path: |
+          bandit-report.json
+          safety-report.json
+
+  # Docker Build and Test
+  docker:
+    runs-on: ubuntu-latest
+    name: Docker Build & Test
+    needs: [testing, security]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Build Docker Image
+      run: |
+        docker build -t medical-imaging-ai-api:latest .
+        
+    - name: Test Docker Image
+      run: |
+        docker run -d -p 8001:8001 --name test-api medical-imaging-ai-api:latest
+        sleep 15
+        curl -f http://localhost:8001/health || exit 1
+        docker stop test-api
+        docker rm test-api
+
+  # Frontend Testing
+  frontend:
+    runs-on: ubuntu-latest
+    name: Frontend Testing
+    needs: code-quality
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: frontend/react/package-lock.json
+        
+    - name: Install frontend dependencies
+      run: |
+        cd frontend/react
+        npm ci
+        
+    - name: Run frontend tests
+      run: |
+        cd frontend/react
+        npm test -- --coverage --watchAll=false
+        
+    - name: Build frontend
+      run: |
+        cd frontend/react
+        npm run build
+
+  # Model Testing
+  model-testing:
+    runs-on: ubuntu-latest
+    name: Model Testing
+    needs: testing
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest torch torchvision
+        
+    - name: Test Model Loading
+      run: |
+        python -c "
+        import sys
+        sys.path.append('.')
+        from backend.api.working_api_server import load_real_model
+        load_real_model()
+        print('Model loading test passed')
+        "
+        
+    - name: Test Model Inference
+      run: |
+        pytest tests/models/ -v --tb=short
+
+  # Performance Testing
+  performance:
+    runs-on: ubuntu-latest
+    name: Performance Testing
+    needs: [api-testing, docker]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install locust
+        
+    - name: Start API Server
+      run: |
+        python backend/api/working_api_server.py &
+        sleep 10
+        
+    - name: Run Load Tests
+      run: |
+        locust -f tests/performance/locustfile.py --headless -u 10 -r 2 -t 30s --host=http://localhost:8001
+
+  # Deployment (only on main branch)
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy to Staging
+    needs: [testing, api-testing, security, docker, frontend, model-testing, performance]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Deploy to AWS (placeholder)
+      run: |
+        echo "Deploying to AWS..."
+        echo "This would deploy to staging environment"
+        # Add actual deployment commands here
+        
+    - name: Run Smoke Tests
+      run: |
+        echo "Running smoke tests on deployed environment"
+        # Add smoke test commands here
+
+  # Notification
+  notify:
+    runs-on: ubuntu-latest
+    name: Notify Results
+    needs: [deploy]
+    if: always()
+    
+    steps:
+    - name: Notify Success
+      if: needs.deploy.result == 'success'
+      run: |
+        echo "✅ Deployment successful!"
+        # Add notification logic (Slack, email, etc.)
+        
+    - name: Notify Failure
+      if: needs.deploy.result == 'failure'
+      run: |
+        echo "❌ Deployment failed!"
+        # Add notification logic (Slack, email, etc.)
