@@ -18,10 +18,54 @@ import logging
 from typing import Dict, Any, List
 import io
 import base64
+import psutil
+import time
+from datetime import datetime, timedelta
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Global metrics tracking
+class MetricsTracker:
+    def __init__(self):
+        self.start_time = datetime.now()
+        self.total_requests = 0
+        self.successful_requests = 0
+        self.failed_requests = 0
+        self.response_times = []
+        
+    def record_request(self, success: bool, response_time: float):
+        self.total_requests += 1
+        if success:
+            self.successful_requests += 1
+        else:
+            self.failed_requests += 1
+        self.response_times.append(response_time)
+        # Keep only last 100 response times for average calculation
+        if len(self.response_times) > 100:
+            self.response_times = self.response_times[-100:]
+    
+    def get_metrics(self):
+        uptime = datetime.now() - self.start_time
+        avg_response_time = sum(self.response_times) / len(self.response_times) if self.response_times else 0
+        error_rate = self.failed_requests / self.total_requests if self.total_requests > 0 else 0
+        
+        return {
+            "api_status": "healthy",
+            "models_loaded": True,
+            "uptime": str(uptime).split('.')[0],  # Remove microseconds
+            "total_requests": self.total_requests,
+            "successful_requests": self.successful_requests,
+            "failed_requests": self.failed_requests,
+            "error_rate": round(error_rate, 3),
+            "average_response_time": f"{avg_response_time:.2f}s",
+            "memory_usage": f"{psutil.virtual_memory().percent}%",
+            "cpu_usage": f"{psutil.cpu_percent()}%"
+        }
+
+# Initialize metrics tracker
+metrics_tracker = MetricsTracker()
 
 # Create FastAPI app
 app = FastAPI(
@@ -89,7 +133,7 @@ def preprocess_image(image_bytes: bytes) -> torch.Tensor:
         return tensor
     except Exception as e:
         logger.error(f"Error preprocessing image: {e}")
-        raise HTTPException(status_code=400, detail=f"Error preprocessing image: {e}")
+        raise Exception(f"Error preprocessing image: {e}")
 
 def mock_predict(image_tensor: torch.Tensor) -> Dict[str, Any]:
     """Make mock prediction"""
@@ -200,6 +244,9 @@ async def list_models():
 @app.post("/upload")
 async def upload_image(file: UploadFile = File(...)):
     """Upload and analyze a medical image"""
+    start_time = time.time()
+    success = False
+    
     try:
         # Read image data
         image_data = await file.read()
@@ -210,22 +257,31 @@ async def upload_image(file: UploadFile = File(...)):
         # Make prediction
         prediction = mock_predict(image_tensor)
         
+        # Calculate processing time
+        processing_time = time.time() - start_time
+        
         # Add metadata
         result = {
             "filename": file.filename,
             "file_size": len(image_data),
             "content_type": file.content_type,
             "prediction": prediction,
-            "processing_time": "0.1s",
-            "timestamp": "2024-01-01T00:00:00Z"
+            "processing_time": f"{processing_time:.2f}s",
+            "timestamp": datetime.now().isoformat() + "Z"
         }
         
+        success = True
         logger.info(f"Successfully processed image: {file.filename}")
         return result
         
     except Exception as e:
         logger.error(f"Error processing image: {e}")
         raise HTTPException(status_code=500, detail=f"Error processing image: {e}")
+    
+    finally:
+        # Record metrics
+        response_time = time.time() - start_time
+        metrics_tracker.record_request(success, response_time)
 
 @app.post("/predict")
 async def predict_image(file: UploadFile = File(...)):
@@ -234,18 +290,8 @@ async def predict_image(file: UploadFile = File(...)):
 
 @app.get("/metrics")
 async def get_metrics():
-    """Get system metrics"""
-    return {
-        "api_status": "healthy",
-        "models_loaded": model is not None,
-        "uptime": "1h 23m",
-        "total_requests": 42,
-        "successful_requests": 40,
-        "error_rate": 0.048,
-        "average_response_time": "0.15s",
-        "memory_usage": "256MB",
-        "cpu_usage": "12%"
-    }
+    """Get real-time system metrics"""
+    return metrics_tracker.get_metrics()
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8001, log_level="info")
