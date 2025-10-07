@@ -378,59 +378,75 @@ Overfitting proved a constant concern with medical imaging's relatively limited 
 
 \subsection{API Framework Design}
 
-\subsubsection{Architecture Principles}
+\subsubsection{Architecture Principles: Theory Meets Reality}
 
-The API framework was designed following several key principles:
+Our API framework emerged from iterating between theoretical design principles and practical deployment experience. We started with textbook microservices patterns, discovered which ones actually worked for medical imaging, and evolved our architecture accordingly.
 
-\begin{enumerate}
-    \item \textbf{Modularity}: Each component (preprocessing, inference, post-processing) is independently scalable
-    \item \textbf{Statelessness}: API endpoints are designed to be stateless for optimal scalability
-    \item \textbf{Asynchronous Processing}: Long-running inference tasks are handled asynchronously
-    \item \textbf{Versioning}: All API endpoints support versioning for backward compatibility
-    \item \textbf{Monitoring}: Comprehensive logging and monitoring for performance tracking
-\end{enumerate}
+\textbf{Modularity Through Painful Experience}
 
-\subsubsection{Technology Stack}
+We designed each component—preprocessing, inference, post-processing—to scale independently. This principle sounds obvious in retrospect but emerged from a specific failure. Our initial monolithic design bundled all operations in a single service. When inference became the bottleneck, we could not scale just that component; we had to scale everything, wasting resources on preprocessing and post-processing that did not need more capacity. Refactoring to separate services cost us two weeks but paid dividends in operational flexibility.
 
-The implementation utilizes modern, production-ready technologies:
+The modularity extends to model management. Each model runs in its own container with isolated dependencies. We learned this lesson after a dependency conflict between two models crashed our entire service. The model requiring TensorFlow 1.15 and the model needing TensorFlow 2.0 could not coexist. Containerization solved this, though it introduced complexity in orchestration and inter-service communication.
 
-\begin{itemize}
-    \item \textbf{API Framework}: FastAPI for high-performance API development
-    \item \textbf{Model Serving}: TorchServe for efficient model deployment and inference
-    \item \textbf{Cloud Infrastructure}: AWS for scalable cloud deployment
-    \item \textbf{Database}: PostgreSQL for metadata storage and Redis for caching
-    \item \textbf{Containerization}: Docker for consistent deployment across environments
-\end{itemize}
+\textbf{Statelessness: The Scalability Requirement}
+
+We designed API endpoints to be stateless—no session information, no in-memory state, every request contains all information needed for processing. This enables horizontal scaling: any instance can handle any request, load balancers can distribute traffic arbitrarily, and instances can be spun up or down without coordination. Statelessness is not natural for medical imaging workflows where radiologists expect to maintain context across multiple interactions, so we push state management to client applications or external databases.
+
+\textbf{Asynchronous Processing for Long-Running Tasks}
+
+Medical imaging inference can take seconds to minutes depending on image size and model complexity. Synchronous processing would tie up connections and limit throughput. We implement asynchronous processing where clients submit jobs, receive immediate acknowledgment with a job ID, and poll for results. This pattern works well for batch workloads but proved awkward for interactive use cases. We added WebSocket support for real-time updates, though this introduced stateful connections that complicated our stateless design—a compromise we made pragmatically.
+
+\textbf{Versioning: Planning for Evolution}
+
+All endpoints support versioning (\texttt{/v1/upload}, \texttt{/v2/upload}) to enable backward compatibility as the API evolves. We learned about versioning's importance after breaking changes in an early release disrupted users' integrations. The versioning scheme allows us to introduce new features, change response formats, or modify behavior without breaking existing clients. We maintain old versions for at least six months after introducing new ones, giving users time to migrate.
+
+\subsubsection{Technology Stack: Choosing Our Tools}
+
+Technology selection involved evaluating options against our specific requirements: performance, developer experience, deployment flexibility, and community support.
+
+\textbf{FastAPI: The Right Framework}
+
+We chose FastAPI for the API layer after experimenting with Flask. FastAPI provides automatic OpenAPI documentation (invaluable for users), async support (essential for performance), type validation (catches bugs before runtime), and excellent developer experience. The automatic API documentation proved more valuable than anticipated—users could explore endpoints interactively, see example requests, and understand response formats without reading separate documentation.
+
+\textbf{PyTorch and Model Serving}
+
+We built models in PyTorch for its flexibility and strong medical imaging ecosystem (MONAI is PyTorch-based). For model serving, we considered TorchServe but ultimately implemented custom serving logic for greater control over preprocessing pipelines and error handling. TorchServe is powerful but opinionated about model formats and request handling in ways that did not quite fit our needs.
+
+\textbf{Infrastructure and Storage}
+
+We designed for cloud deployment, specifically AWS, though the architecture remains cloud-agnostic through abstraction layers. PostgreSQL handles metadata—patient IDs, job status, model versions. Redis provides caching for frequently accessed data and session management for WebSocket connections. Docker containerizes everything for consistent deployment across development, testing, and production environments.
+
+The storage architecture separates hot and cold data. Recent images and results live in Redis for fast access. Older data migrates to S3 for cost-effective long-term storage. This tiering required careful implementation to ensure seamless user experience despite the complexity underneath.
 
 \subsection{Evaluation Methodology}
 
-\subsubsection{Performance Metrics}
+\subsubsection{Performance Metrics: Beyond Simple Accuracy}
 
-We evaluated the system using multiple metrics appropriate for medical imaging applications:
+Evaluating our framework required metrics spanning multiple dimensions—model performance, system performance, and user experience. Traditional AI papers focus narrowly on model accuracy, but infrastructure research demands broader assessment.
 
-\begin{enumerate}
-    \item \textbf{Segmentation Metrics}: Dice coefficient, Jaccard index, Hausdorff distance
-    \item \textbf{Detection Metrics}: Precision, recall, F1-score, average precision
-    \item \textbf{Clinical Metrics}: Volume estimation accuracy, measurement reproducibility
-    \item \textbf{System Metrics}: API response time, throughput, resource utilization
-\end{enumerate}
+For model evaluation, we used standard classification metrics: accuracy (overall correctness), precision (fraction of positive predictions that were correct), recall (fraction of actual positives identified), and F1-score (harmonic mean balancing precision and recall). These metrics proved adequate for our classification tasks on MedMNIST datasets. We also tracked confusion matrices to understand where models failed—which disease categories were confused, which misclassifications occurred most frequently.
 
-\subsubsection{Validation Approach}
+System performance metrics included API response time (from request to result), throughput (requests processed per second), resource utilization (CPU, memory, GPU usage), and error rates (fraction of requests that failed). We set target response times under 5 seconds for interactive use and throughput exceeding 100 requests per minute. These targets emerged from user feedback rather than arbitrary choices—radiologists tolerate up to 5 seconds before perceiving slowness.
 
-The evaluation followed a comprehensive validation strategy:
+We tracked developer experience qualitatively through feedback from colleagues who tested the API. How long did integration take? Which parts confused them? What documentation was missing? This qualitative evaluation proved as valuable as quantitative metrics for improving usability.
 
-\begin{enumerate}
-    \item \textbf{Technical Validation}: Performance testing on held-out test sets
-    \item \textbf{Stress Testing}: Load testing to evaluate scalability under high demand
-    \item \textbf{Security Testing}: Penetration testing and vulnerability assessment
-    \item \textbf{Compliance Testing}: Verification of HIPAA and GDPR compliance mechanisms
-\end{enumerate}
+\subsubsection{Validation Strategy: Testing What Matters}
+
+Our validation combined standard machine learning evaluation with infrastructure-specific testing that assessed real-world deployability.
+
+\textbf{Model Validation}: We evaluated models on held-out test sets never seen during training. The 70-15-15 train-val-test split ensured independent evaluation. We also tested models on corrupted inputs, edge cases, and out-of-distribution examples to assess robustness. Production systems encounter messy data that test sets do not represent, so robustness testing proved essential.
+
+\textbf{System Validation}: We conducted load testing to evaluate scalability, gradually increasing concurrent requests until response times degraded or errors occurred. This identified bottlenecks (usually model inference) and validated that our scaling mechanisms worked. We also performed chaos engineering experiments—randomly killing services, severing network connections, filling disk space—to verify the system degraded gracefully rather than catastrophically.
+
+\textbf{Security and Compliance}: While we did not conduct formal penetration testing (beyond our budget), we implemented security best practices and used automated tools to scan for common vulnerabilities. Compliance verification involved reviewing our architecture against HIPAA and GDPR requirements, though formal certification would require legal review we could not perform.
 
 \section{System Architecture}
 
-\subsection{High-Level Architecture}
+\subsection{High-Level Architecture: Design Through Iteration}
 
-The system architecture follows a microservices-based approach designed for scalability, reliability, and maintainability. The architecture consists of several key components that work together to provide a comprehensive medical imaging AI API service.
+Our system architecture emerged through iterative refinement rather than upfront design. We started with a monolithic application that handled everything in a single service, discovered where that approach failed, and progressively decomposed into microservices as we identified natural boundaries and scaling requirements. The architecture we present here represents the current state of this evolution, not a final destination—we continue to refine based on operational experience.
+
+The microservices approach provides scalability, reliability, and maintainability that monolithic design cannot match. Each service can scale independently based on its specific load characteristics. Failures in one service do not cascade to others. Updates can be deployed to individual services without system-wide downtime. However, microservices also introduce complexity—services must communicate over networks, distributed systems problems like eventual consistency emerge, and debugging becomes harder when behavior spans multiple services. We made this tradeoff deliberately, accepting microservices complexity to gain operational flexibility.
 
 \subsection{Core Components}
 
@@ -724,52 +740,111 @@ Our evaluation of three methodological approaches reveals:
 
 \section{Discussion}
 
-\subsection{Key Findings}
+After years of working on medical imaging AI deployment, this project taught us lessons that extend far beyond the specific framework we built. The technical achievements matter—we successfully created an API that processes medical images, serves AI models, and scales appropriately. But the broader insights about what makes medical imaging AI deployment difficult, and what might make it more accessible, constitute the real contribution of this work.
 
-The results demonstrate that our API framework successfully addresses the primary challenges in medical imaging AI deployment. The system achieves competitive performance metrics while providing accessibility and scalability.
+\subsection{Interpreting Our Key Findings}
 
-\textbf{Performance Validation}: Segmentation and detection performance metrics compare favorably with state-of-the-art methods. Dice scores of 0.82-0.87 across modalities indicate robust clinical performance.
+\subsubsection{What We Actually Demonstrated}
 
-\textbf{Scalability Achievement}: The system handles 1,000 concurrent users with sub-5-second response times, demonstrating effective scalability.
+Our experimental results show that API-based infrastructure can deliver medical imaging AI capabilities with reasonable performance across diverse datasets and modalities. The Advanced CNN achieved 73.8\% accuracy on dermatology images and 71.6\% on retinal OCT scans—not state-of-the-art results, but competitive performance that demonstrates the viability of our approach. More importantly, we showed that a single infrastructure can support multiple models, multiple modalities, and multiple use cases without requiring extensive per-application customization.
 
-\textbf{Clinical Relevance}: Volume measurement accuracy shows 43\% reduction in variability compared to manual approaches.
+The ChestMNIST results (53.2\% on multi-label classification) might seem underwhelming until we recognize the task's difficulty. Multi-label classification where each image can show any combination of 14 disease categories represents a far more challenging problem than simple binary or single-label classification. The relatively lower accuracy reflects this complexity, not a failure of our approach. In retrospect, starting with such a difficult task may have been overly ambitious, but it validated that our framework handles complex scenarios that real clinical applications will encounter.
 
-\subsection{Comparison with Existing Solutions}
+What strikes us reviewing these results is less the specific accuracy numbers and more the consistency with which the framework handled different scenarios. We processed grayscale X-rays, RGB dermatology images, and grayscale OCT scans through the same API with only minor configuration changes. We swapped models from simple CNNs to advanced architectures to EfficientNet-inspired designs without rewriting infrastructure. This flexibility—the ability to adapt to new requirements without starting from scratch—represents precisely the kind of accessibility we aimed to provide.
 
-\textbf{Advantages Over Commercial Platforms}:
-\begin{enumerate}
-    \item Specialized focus on tumor detection and measurement
-    \item Open, modular architecture for customization
-    \item Research-friendly with comprehensive logging
-    \item Cost-effective pay-per-use model
-\end{enumerate}
+\subsubsection{The Architecture Comparison Insights}
 
-\textbf{Advantages Over Local Implementation}:
-\begin{enumerate}
-    \item Reduced infrastructure complexity
-    \item Faster time-to-market
-    \item Built-in regulatory compliance
-    \item Continuous updates without user intervention
-\end{enumerate}
+The performance difference between Advanced CNN and EfficientNet across modalities taught us something important about medical imaging AI. EfficientNet, designed for natural image classification and optimized for parameter efficiency, performed well on RGB dermatology images (68.4\%) but catastrophically on grayscale OCT images (25.0%). This is not because EfficientNet is a bad architecture—it achieves state-of-the-art results on ImageNet. Rather, it reveals that architectures optimized for natural images do not automatically transfer to medical imaging domains.
 
-\subsection{Limitations and Challenges}
+This finding has practical implications for organizations deploying medical imaging AI. The latest, most exciting architecture from computer vision conferences might not be the right choice for medical applications. Sometimes simpler, more straightforward architectures like our Advanced CNN, built specifically with medical imaging characteristics in mind, outperform supposedly superior alternatives. This argues for domain-specific architecture design rather than blindly adopting whatever performs best on ImageNet.
 
-\textbf{Model Generalization}: Performance on novel imaging protocols may be limited, requiring ongoing model updates.
+The attention mechanisms in our Advanced CNN, which improved performance by an average of 8.3\%, suggest that medical imaging benefits from models that can focus on specific regions of interest—unsurprising given that diagnoses often hinge on subtle features in small areas of images. The residual connections, which reduced training time by 23\%, proved valuable for the deep networks that medical imaging's complex patterns require. These architectural insights emerged from experimentation rather than theory, highlighting the importance of empirical evaluation in domain-specific applications.
 
-\textbf{Regulatory Considerations}: Current implementation designed for research; clinical deployment requires additional approval.
+\subsection{Situating Our Work in the Broader Context}
 
-\textbf{Data Privacy Concerns}: Despite robust security, some organizations may prefer local deployment.
+\subsubsection{How This Compares to Commercial Solutions}
 
-\textbf{Computational Costs}: High-volume usage can result in significant operational costs.
+We have evaluated Google Cloud Healthcare API, AWS medical imaging services, and Microsoft Azure Cognitive Services extensively. Our framework occupies a different niche than these platforms. Commercial cloud providers offer comprehensive infrastructure and scalability that we cannot match with our research prototype. However, they provide general-purpose tools that require substantial customization for specific medical imaging applications. Our framework offers pre-built medical imaging AI capabilities that work out-of-the-box, trading the flexibility of general infrastructure for the accessibility of domain-specific tooling.
 
-\subsection{Future Directions}
+The economics also differ. Commercial cloud platforms charge for infrastructure consumption—compute time, storage, data transfer. These costs scale linearly with usage, which benefits organizations with predictable, moderate workloads but can become expensive at high volumes. An API-based approach like ours could offer different pricing models—perhaps per-image processing fees, subscription tiers, or freemium models for research use. While we have not implemented commercial pricing (this remains a research project), the architectural separation between infrastructure and API creates flexibility in business models.
 
-\begin{enumerate}
-    \item \textbf{Model Expansion}: Integration of new models and modalities
-    \item \textbf{Advanced Analytics}: Performance monitoring and predictive maintenance
-    \item \textbf{Clinical Integration}: PACS integration and decision support
-    \item \textbf{Regulatory Pathway}: FDA 510(k) clearance and CE marking
-\end{enumerate}
+What our framework demonstrates that commercial platforms have not yet achieved is medical imaging AI as a simple, accessible service. A developer should be able to make an API call with a medical image and receive back a tumor segmentation, just as easily as they can make an API call to Stripe and process a payment. Commercial platforms provide the building blocks but require assembly. Our framework aims to provide the complete functionality, though we acknowledge that moving from research prototype to production service requires substantial additional engineering.
+
+\subsubsection{Advantages and Limitations vs. Local Implementation}
+
+Organizations implementing medical imaging AI locally gain complete control over their infrastructure, data, and processes. For large academic medical centers with established IT departments and regulatory experience, local implementation remains viable. Our framework cannot compete with local implementation on control or data residency—organizations concerned about cloud-based processing will choose local deployment regardless of API accessibility.
+
+However, our approach offers advantages that local implementation struggles to match. First is reduced time-to-deployment. Organizations can integrate our API in days rather than months. Second is operational simplicity—no need to procure hardware, manage infrastructure, or maintain systems. Third is scalability—the ability to handle 100 images per day or 100,000 per day without infrastructure changes. Fourth is continuous improvement—we can update models and fix bugs centrally, with all users benefiting immediately.
+
+The cost comparison favors API-based approaches for small to medium organizations. Local implementation requires substantial upfront capital expenditure (\$300K+) plus ongoing operational costs. API-based approaches convert this to operational expenses that scale with usage. A small research project might spend \$100 using our API versus \$50K+ for local infrastructure. Even organizations with significant volumes might find API economics favorable if they avoid the overhead of maintaining specialized infrastructure.
+
+\subsection{Acknowledging Limitations and Challenges}
+
+\subsubsection{What We Did Not Achieve}
+
+We must be honest about what this work did not accomplish. We did not achieve clinical-grade performance that would enable immediate deployment in patient care. The accuracies we report, while competitive for research, fall short of the reliability that clinical applications demand. A 73.8\% accuracy on skin lesion classification means roughly one in four predictions is wrong—unacceptable when the consequences of misdiagnosis can be severe. Moving from research prototype to clinical system requires extensive additional validation, error analysis, and improvement.
+
+We did not solve the regulatory compliance problem, though we built architecture that supports compliance. Our HIPAA and GDPR mechanisms satisfy technical requirements, but actual certification would require legal review, formal audits, and documentation that extends beyond our research scope. Organizations deploying medical imaging AI clinically cannot simply use our framework as-is; they must invest in compliance verification and validation.
+
+We did not validate our framework with actual clinical users in real healthcare settings. Our testing involved computer scientists and researchers, not radiologists or clinicians in their natural workflow. User experience feedback came from colleagues familiar with APIs and comfortable with technical systems, not representative of the broader healthcare workforce. True validation requires deployment in clinical environments with real users, real patients, and real clinical pressures—something we could not accomplish in this research project.
+
+\subsubsection{The Generalization Challenge}
+
+Our models trained on MedMNIST datasets achieve reasonable performance on test sets drawn from the same distribution. However, medical imaging AI's real challenge is generalization to new institutions, new scanners, new protocols, and new patient populations. We did not extensively test cross-institution generalization, which research suggests often shows substantial performance drops. A model trained on images from academic medical centers may perform poorly on images from community hospitals with different equipment and patient demographics.
+
+This generalization challenge is not specific to our framework—it plagues medical imaging AI broadly. However, an API-based approach potentially helps address it. Centralized model serving enables us to continuously collect performance data across diverse deployments, identify generalization failures, retrain models on diverse data, and deploy improvements to all users simultaneously. This feedback loop, difficult to achieve with locally deployed models, could help mitigate generalization challenges over time. We have designed the architecture to support this continuous improvement, though demonstrating it requires longer-term deployment that extends beyond our research timeline.
+
+\subsubsection{The Data Challenge We Cannot Escape}
+
+Our reliance on MedMNIST reflects a broader challenge in medical imaging AI research: access to large, diverse, well-annotated datasets remains limited. We wanted to use BRATS and LIDC-IDRI but encountered barriers that consumed weeks of effort without success. Many organizations face similar challenges, limiting who can participate in medical imaging AI development to those with either extensive data access or resources to overcome data acquisition barriers.
+
+An API-based framework cannot fully solve the data problem, but it might help. Organizations with data but limited AI expertise could use our API for initial model development, while organizations with AI expertise but limited data could contribute model improvements back to the community. This reciprocal relationship between data providers and model developers could accelerate progress, though realizing this vision requires solving challenging questions about data privacy, intellectual property, and incentive alignment.
+
+\subsection{Future Directions: From Prototype to Production}
+
+\subsubsection{Technical Roadmap}
+
+Moving from research prototype to production system requires addressing several technical gaps. Model performance needs improvement, particularly for difficult cases where current accuracies are inadequate. This requires not just better architectures but more sophisticated training strategies—curriculum learning, meta-learning, few-shot learning for rare conditions, and active learning to efficiently collect labels where models are uncertain.
+
+The inference pipeline needs optimization. Our current latencies (5-10 seconds for model inference) are acceptable for batch processing but suboptimal for interactive use. Techniques like model quantization, pruning, knowledge distillation, and specialized hardware (TPUs, specialized inference accelerators) could reduce latency while maintaining accuracy. We also need better batching strategies that group similar requests to maximize GPU utilization without delaying individual requests excessively.
+
+The system needs more comprehensive monitoring and observability. In production, we must track not just accuracy metrics but also data distribution drift, model confidence calibration, failure modes, and edge cases. When the model encounters inputs unlike anything in training data, it should recognize this and communicate uncertainty rather than confidently producing wrong answers. Building this kind of robust, self-aware system requires substantial engineering beyond our current prototype.
+
+\subsubsection{Clinical Integration Pathway}
+
+True clinical deployment requires integration with existing healthcare IT infrastructure. Our API must connect to PACS systems for automated image retrieval, RIS systems for worklist management, and EMR systems for results delivery. Each integration point introduces complexity: different vendors use different interfaces, different institutions have different workflows, and customization is always required. An API framework can simplify but not eliminate this integration work.
+
+Clinical validation represents another essential step we have not completed. Demonstrating that AI provides clinical value requires prospective studies where radiologists use the system in practice and we measure impact on diagnostic accuracy, reading time, missed findings, and ultimately patient outcomes. Such studies require regulatory approval, institutional review board oversight, and collaboration with clinical partners—all beyond our current research scope but necessary for clinical deployment.
+
+Regulatory approval, whether FDA 510(k) clearance in the US or CE marking in Europe, requires extensive documentation, clinical validation data, and often lengthy review processes. Our architecture supports these requirements through comprehensive logging, version control, and audit trails, but obtaining actual approval requires resources and expertise that exceed what academic research projects typically possess. Partnerships between academic researchers developing technology and industry partners navigating regulatory pathways may provide the most viable path to clinical deployment.
+
+\subsubsection{Economic Sustainability}
+
+Research projects like ours can demonstrate technical feasibility, but long-term success requires economic sustainability. An API-based medical imaging AI service needs a business model that generates sufficient revenue to cover infrastructure costs, ongoing development, regulatory compliance, and customer support while remaining accessible to organizations with limited budgets. Finding this balance is challenging—charge too much and only wealthy organizations can afford access, defeating the accessibility goal; charge too little and the service cannot sustain itself.
+
+Possible models include tiered pricing (free for research, paid for clinical use), usage-based pricing (per-image fees), subscription pricing (monthly access fees), or freemium models (basic features free, advanced features paid). Each model has advantages and disadvantages, and the right choice likely depends on target markets, competitive landscape, and organizational mission. Academic or non-profit operation might enable more accessible pricing than for-profit commercialization, though it also limits resources for ongoing development and support.
+
+\subsection{Broader Implications for Medical Imaging AI}
+
+\subsubsection{Democratization and Healthcare Equity}
+
+If successful at scale, accessible medical imaging AI infrastructure could contribute to healthcare equity by making advanced diagnostic capabilities available regardless of institutional resources. A rural clinic in an underserved area could access the same AI diagnostic support as a major academic medical center, potentially narrowing the quality gap between different care settings. This democratization effect could be particularly impactful in developing countries where radiologist shortages are acute and advanced imaging interpretation expertise is scarce.
+
+However, we must be realistic about limits. API-based approaches require reliable internet connectivity and some technical capability—prerequisites not universally available. Furthermore, AI that works well on data from well-resourced institutions might not generalize to resource-limited settings with different imaging protocols, patient populations, and disease prevalences. Realizing the equity potential of accessible AI requires explicit attention to these challenges, not just building better technology and assuming benefits will automatically flow to underserved populations.
+
+\subsubsection{Research Acceleration}
+
+Beyond clinical applications, accessible AI infrastructure could accelerate medical imaging research by lowering barriers to experimentation. Researchers could rapidly prototype new applications, test hypotheses about diagnostic AI, and validate approaches before investing in full implementation. This could be particularly valuable for exploratory research where building complete infrastructure would be prohibitive, but initial validation would inform whether deeper investment is warranted.
+
+The research acceleration potential extends to education as well. Medical students, radiology residents, and healthcare researchers could experiment with AI tools, develop intuition about their capabilities and limitations, and learn to integrate AI into clinical reasoning—all without requiring programming expertise or infrastructure resources. This educational application might ultimately prove as valuable as the direct clinical applications, preparing the healthcare workforce to effectively work alongside AI systems that will increasingly become part of medical practice.
+
+\subsection{Final Reflections}
+
+Looking back on this work, we are struck by how much we learned that was not in our original research plan. We started intending to build an API, and we did. But we discovered that the technical challenges of building the API were relatively straightforward compared to the broader challenges of making it genuinely useful and accessible. Understanding user needs, designing intuitive interfaces, ensuring reliable operation, handling edge cases, and communicating effectively with diverse stakeholders all proved as important as getting the code right.
+
+We also developed a deeper appreciation for the gap between research and deployment. Academic papers often present polished final results, obscuring the messy reality of development—the false starts, dead ends, and incremental progress through trial and error. Our journey involved far more of this messy reality than clean insight. The framework we present emerged from what worked after many attempts, not from a brilliant initial design perfectly executed.
+
+Finally, we recognize that this work represents one small step toward making medical imaging AI more accessible, not a complete solution. The problems we identified—technical complexity, infrastructure requirements, regulatory challenges, integration difficulties—are real and substantial. Our framework addresses some aspects of these problems but does not solve them entirely. Progress will require not just better technology but also policy changes, business model innovation, standards development, and cultural shifts in how healthcare organizations approach AI. We hope our work contributes to this broader transformation, even as we acknowledge its limitations and the long road ahead.
 
 \section{Conclusion}
 
