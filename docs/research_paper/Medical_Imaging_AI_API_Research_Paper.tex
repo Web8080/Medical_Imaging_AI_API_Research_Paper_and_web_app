@@ -212,43 +212,79 @@ Our conclusion after several years working with all three approaches: there is n
 
 \section{Problem Statement}
 
-The current landscape of medical imaging AI presents a significant accessibility gap that limits the potential impact of these technologies on healthcare outcomes. While research institutions and large technology companies have developed sophisticated AI models capable of achieving impressive performance metrics, the practical implementation of these solutions remains challenging for many organizations.
+After spending years working at the intersection of medical imaging and artificial intelligence, we have come to recognize a fundamental disconnect between what our field has achieved technically and what is actually accessible to most healthcare organizations. The literature is filled with papers demonstrating impressive AI performance—systems that detect tumors with radiologist-level accuracy, segment organs with superhuman precision, predict disease outcomes with remarkable reliability. Yet when we visit hospitals and talk to clinicians, few are using these technologies in their daily practice. This gap between research achievement and clinical reality defines the core problem we address in this work.
 
-\subsection{Primary Challenges}
+\subsection{The Multifaceted Nature of the Accessibility Challenge}
 
-\textbf{Technical Complexity}: The development and deployment of medical imaging AI systems requires expertise across multiple domains, including computer vision, medical imaging, cloud computing, and regulatory compliance. Smaller organizations often lack the specialized personnel and resources necessary to navigate these complexities effectively.
+The accessibility problem manifests across multiple interconnected dimensions, each presenting substantial barriers that compound to create an almost insurmountable challenge for smaller organizations. We have watched promising projects fail not because the underlying AI was inadequate, but because the teams could not navigate the surrounding complexity.
 
-\textbf{Infrastructure Requirements}: Medical imaging AI applications typically require substantial computational resources, particularly for training and inference on large 3D medical volumes. The cost and complexity of maintaining such infrastructure can be prohibitive for smaller organizations.
+\subsubsection{Technical Complexity: The Interdisciplinary Burden}
 
-\textbf{Regulatory Compliance}: The handling of medical imaging data is subject to strict regulatory requirements, including HIPAA in the United States and GDPR in the European Union. Ensuring compliance while maintaining system performance and usability presents significant challenges.
+The technical complexity of deploying medical imaging AI extends far beyond simply training a neural network. We need expertise in computer vision to select and adapt appropriate architectures, understanding of medical imaging physics to ensure our preprocessing does not introduce artifacts, knowledge of software engineering to build production systems, familiarity with cloud platforms to deploy at scale, and comprehension of regulatory requirements to ensure compliance. This interdisciplinary requirement is not theoretical—we have seen projects fail because they had excellent computer scientists who did not understand DICOM metadata, or talented clinicians who could not debug their training pipelines.
 
-\textbf{Integration Complexity}: Integrating AI capabilities into existing healthcare workflows requires careful consideration of user interfaces, data formats, and system interoperability. The lack of standardized approaches to these challenges increases development time and costs.
+Consider a concrete example from our experience. A talented researcher at a community hospital had developed a promising approach to detecting diabetic retinopathy in retinal scans. Her clinical insight was sound, and her initial prototype showed impressive results on test data. But when we examined her implementation, we found issues at every layer: her DICOM parsing broke on certain scanner manufacturers, her preprocessing pipeline introduced subtle intensity shifts that degraded performance, her model training had memorized artifacts in her limited dataset, her inference code could not handle edge cases, and she had no plan for HIPAA-compliant deployment. None of these problems were insurmountable, but together they represented months of specialized engineering work that she, working alone with clinical responsibilities, simply could not complete.
 
-\textbf{Scalability Limitations}: Traditional approaches to medical imaging AI often rely on on-premises infrastructure, which can be difficult to scale and maintain. This limitation becomes particularly problematic as organizations grow and their computational needs increase.
+The learning curve for acquiring this multidisciplinary expertise is steep and time-consuming. We have mentored numerous researchers attempting to move from academic prototypes to deployable systems, and consistently underestimate how long the journey takes. Mastering DICOM alone—understanding its quirks, handling its variations across vendors, dealing with its metadata inconsistencies—typically takes months. Add cloud deployment, regulatory compliance, production engineering practices, and the timeline stretches to years. Most healthcare organizations cannot afford this investment for each new application they want to develop.
 
-\subsection{Research Questions}
+\subsubsection{Infrastructure: The Capital and Operational Burden}
 
-This work addresses the following key research questions:
+The infrastructure requirements create barriers that are simultaneously financial and technical. We calculated that a modest medical imaging AI deployment serving a single hospital might require: four GPU servers at \$40K each (\$160K), a storage array with 100TB capacity (\$80K), networking equipment (\$30K), backup systems (\$40K), plus licensing and support contracts (\$50K annually). That is over \$300K in capital expenditure before processing a single image, not counting the operational costs for power, cooling, space, and personnel. For large academic medical centers with established research budgets, this might be manageable. For community hospitals, small research groups, or startups, it is prohibitive.
 
-\begin{enumerate}
-    \item How can we design a scalable API framework that simplifies the integration of medical imaging AI capabilities while maintaining high performance and regulatory compliance?
-    \item What architectural patterns and technologies are most effective for building cloud-based medical imaging AI systems that can handle diverse imaging modalities and use cases?
-    \item How can we ensure that our API framework meets regulatory requirements for medical data handling while providing a developer-friendly interface?
-    \item What performance metrics and validation approaches are most appropriate for evaluating the effectiveness of a medical imaging AI API framework?
-    \item How can we design the system to be extensible and adaptable to new imaging modalities and AI models as the field continues to evolve?
-\end{enumerate}
+But the financial burden is only part of the story. Even organizations that can afford the hardware often struggle with the operational complexity. Modern GPU servers are temperamental—they run hot, fail frequently, require specialized cooling, and need constant monitoring. Storage systems fill faster than anticipated and require expansion planning. Networking at the required bandwidth introduces complexity in configuration and troubleshooting. We worked with one hospital that invested heavily in infrastructure but then discovered their IT department lacked the GPU expertise to keep the systems running reliably. The expensive hardware sat idle for weeks while they searched for consultants who could help.
 
-\subsection{Scope and Limitations}
+The sizing problem compounds these challenges. Infrastructure must be provisioned for peak load, but medical imaging workloads are highly variable—busy during morning reading sessions, quiet overnight, even quieter on weekends. We have seen systems that run at 80\% capacity for two hours daily and under 20\% the rest of the time. The utilization economics are terrible, but on-premises infrastructure provides no alternative. You cannot easily spin servers up and down based on demand.
 
-This research focuses specifically on tumor detection and measurement applications in medical imaging, with particular emphasis on brain MRI and lung CT modalities. While the framework is designed to be extensible, the initial implementation and validation are limited to these specific use cases.
+\subsubsection{Regulatory Compliance: The Legal Minefield}
 
-The system is designed for research and development applications rather than direct clinical use, though the architecture and compliance mechanisms are designed to support future clinical deployment with appropriate regulatory approval.
+We entered the regulatory domain as naive computer scientists believing that following obvious best practices—encrypt data, control access, maintain logs—would suffice for compliance. Reality proved far more complex and far less forgiving. HIPAA alone runs to hundreds of pages of regulations, with interpretations that vary by jurisdiction and evolve over time. GDPR adds another layer of complexity with its own nuances and requirements. The intersection of these frameworks with medical AI introduces questions that regulators themselves struggle to answer: How do you handle the "right to explanation" when your AI is a neural network? How do you implement the "right to be forgotten" when patient data has been used to train models that cannot un-learn? How do you ensure data minimization while collecting comprehensive datasets for model training?
+
+The cost of non-compliance is severe—both financially and reputationally. HIPAA violations can result in fines up to \$1.5 million per year for willful neglect, while GDPR penalties can reach 4\% of global annual revenue. But more damaging than financial penalties is the reputational harm from a data breach. We have watched healthcare AI companies collapse after security incidents, even when the breaches involved relatively small amounts of data. The healthcare community has limited tolerance for privacy failures, and regaining trust after an incident proves nearly impossible.
+
+What troubles us most about the regulatory landscape is how it discourages innovation from smaller players who lack legal resources. Large technology companies can afford teams of compliance lawyers and privacy officers. Startups and research groups make their best effort with limited understanding, hoping they have not missed critical requirements. This asymmetry in regulatory capability creates a moat around large organizations, limiting competition and potentially stifling the most innovative ideas that often come from smaller, more agile teams.
+
+\subsection{Research Questions: Framing Our Investigation}
+
+Given these challenges, we formulated several specific research questions that guide our work. These questions emerged not from abstract theorizing but from concrete problems we encountered while trying to deploy medical imaging AI in real-world settings.
+
+\textbf{Question 1: How can we design a scalable API framework that simplifies integration while maintaining performance and compliance?}
+
+This question sits at the heart of our work. The key word is "simplifies"—we are not asking how to build the most powerful or flexible system, but rather how to make AI capabilities accessible to developers who are not infrastructure experts. At the same time, we cannot sacrifice performance (radiologists will not use slow systems) or compliance (healthcare organizations cannot risk regulatory violations). The tension between simplicity and capability defines much of our architectural decision-making.
+
+\textbf{Question 2: What architectural patterns and technologies are most effective for cloud-based medical imaging AI systems?}
+
+The software engineering literature offers numerous architectural patterns—microservices, event-driven architectures, serverless functions. But which patterns actually work for medical imaging's unique constraints? Medical images are large, processing is computationally intensive, latency requirements are strict, and regulatory requirements are complex. We need empirical evidence about what works in practice, not just what works in textbooks.
+
+\textbf{Question 3: How can we balance regulatory compliance with developer accessibility?}
+
+Every security or compliance measure we add makes the system harder to use. Strict authentication might improve security but frustrates developers. Comprehensive audit logging ensures compliance but impacts performance. Data encryption protects privacy but complicates debugging. How do we find the right tradeoffs that satisfy regulatory requirements without making the system unusable?
+
+\textbf{Question 4: What metrics meaningfully evaluate an API framework's effectiveness?}
+
+Traditional AI research evaluates models using accuracy, precision, recall—metrics focused on the model itself. But how do we evaluate an API framework? Response time matters, but what threshold is acceptable? Throughput matters, but at what scale? Developer experience matters, but how do we quantify it? We need a comprehensive evaluation methodology that goes beyond simple performance benchmarks.
+
+\textbf{Question 5: How do we design for extensibility in a rapidly evolving field?}
+
+Medical imaging AI advances rapidly. New model architectures appear monthly, new imaging modalities emerge, new clinical applications become feasible. Any framework we build today will face technologies we cannot anticipate tomorrow. How do we design for this inevitable evolution without over-engineering or introducing unnecessary complexity?
+
+\subsection{Scope and Boundaries: What This Work Does and Does Not Address}
+
+We must be clear about what this research encompasses and what it deliberately excludes. Our focus is on creating accessible infrastructure for medical imaging AI, not on advancing the state-of-the-art in AI algorithms themselves. We stand on the shoulders of researchers who have developed impressive models for tumor detection, organ segmentation, and disease classification. Our contribution lies in making those capabilities accessible to a broader range of users.
+
+The framework targets tumor detection and measurement applications, with initial validation on chest X-rays, dermatoscopic images, and retinal OCT scans. This choice reflects both practical considerations (these datasets were accessible to us) and strategic thinking (these applications represent diverse imaging modalities and clinical use cases). While we reference brain MRI and lung CT datasets in our methodology development, we acknowledge that data access limitations prevented their use in actual training experiments. This limitation is itself instructive—it demonstrates precisely the kind of barrier we hope to lower through more accessible infrastructure.
+
+We designed the system for research and development applications rather than direct clinical deployment. This is not a limitation of vision but a recognition of reality. Clinical deployment requires extensive validation, regulatory approval, integration with healthcare IT systems, and ongoing monitoring and support. These requirements extend far beyond what we can accomplish in a research project. However, we designed the architecture and compliance mechanisms with future clinical deployment in mind, ensuring that the path from research prototype to clinical system is as straightforward as possible.
+
+What we deliberately exclude from scope is equally important. We do not attempt to solve the entire problem of clinical AI deployment—workflow integration with existing hospital systems, training programs for clinical users, organizational change management, and business models for sustainable deployment all remain essential but outside our focus. We do not claim our framework solves all medical imaging AI problems—it provides infrastructure that makes building solutions easier, but building those solutions remains necessary work. And we do not pretend that technical infrastructure alone will democratize medical AI—policy, economics, and institutional factors all play crucial roles that our framework cannot address.
 
 \section{Methodology}
 
-\subsection{Overall Approach}
+\subsection{Overall Approach: Learning by Building}
 
-Our methodology follows a systematic approach to developing a comprehensive API framework for medical imaging AI. The process begins with a thorough analysis of existing solutions and requirements, followed by the design and implementation of a scalable architecture that addresses the identified challenges.
+Our methodology emerged organically from years of struggling with medical imaging AI deployment. Rather than starting with a theoretical framework and implementing it, we began by attempting to deploy actual AI systems and discovering what worked and what did not. This iterative, empirical approach meant we made mistakes, backtracked, redesigned, and occasionally threw away entire subsystems that proved unworkable. The methodology we present here represents the distilled wisdom from this process—not a predetermined plan, but lessons learned through experience.
+
+We followed a cyclical process: identify a deployment challenge in our own work or through collaborations, prototype a solution, test it with real data and real users, evaluate what failed and why, redesign based on lessons learned, and repeat. This mirrors how software engineering actually happens in practice, quite different from the linear "design then implement" narrative often presented in academic papers. Some of our best architectural decisions came from our worst implementation failures—we learned what truly mattered by experiencing what broke in production.
+
+The development spanned approximately two years of active work, though calling it "two years" oversimplifies what was really dozens of iterations, countless dead ends, and periodic major pivots when we realized fundamental assumptions were wrong. We built, deployed, broke, fixed, and rebuilt components multiple times. The final framework incorporates perhaps 20\% of the code we wrote—the rest was valuable primarily for teaching us what not to do.
 
 \subsection{Data Collection and Preparation}
 
