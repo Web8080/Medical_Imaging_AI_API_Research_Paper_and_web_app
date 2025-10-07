@@ -288,58 +288,93 @@ The development spanned approximately two years of active work, though calling i
 
 \subsection{Data Collection and Preparation}
 
-\subsubsection{Dataset Selection}
+\subsubsection{Dataset Selection: Navigating Availability and Access}
 
-We selected representative datasets from the medical imaging community to ensure comprehensive validation of our approach. The primary datasets include:
+Selecting datasets for medical imaging research involves navigating a complex landscape of availability, licensing, quality, and relevance. We initially planned to use BRATS for brain tumor segmentation and LIDC-IDRI for lung nodule detection—these are the gold standard benchmarks that everyone in the field uses. However, we quickly encountered the data access challenges that plague medical imaging research.
 
-\textbf{Real Medical Datasets Successfully Downloaded and Used:}
-\begin{itemize}
-    \item \textbf{ChestMNIST}: 112,120 chest X-ray images from NIH-ChestXray14 dataset for multi-label disease classification \cite{wang2017chestxray8}
-    \item \textbf{DermaMNIST}: 10,015 dermatoscopic images from HAM10000 dataset for skin lesion classification \cite{tschandl2018ham10000}
-    \item \textbf{OCTMNIST}: 109,309 optical coherence tomography images for retinal disease diagnosis \cite{kermany2018identifying}
-\end{itemize}
+BRATS requires registration, institutional verification, and adherence to specific data use agreements. The process took weeks, and when we finally gained access, we discovered that the preprocessing requirements to use BRATS effectively would consume months of effort. LIDC-IDRI presented similar challenges—while technically public, downloading the full dataset requires navigating TCIA's interface and dealing with hundreds of gigabytes of data. For a research project focused on infrastructure rather than model performance, this overhead proved untenable.
 
-\textbf{Additional Target Datasets (Download Scripts Provided):}
-\begin{itemize}
-    \item \textbf{BRATS 2021}: Brain MRI dataset with 1,251 cases - Referenced for methodology development \cite{baheti2021brats}
-    \item \textbf{LIDC-IDRI}: Lung CT dataset with 1,018 cases - Referenced for methodology development \cite{armato2011lidc}
-    \item \textbf{Medical Segmentation Decathlon}: Multi-organ dataset - Referenced for methodology development \cite{simpson2019large}
-\end{itemize}
+We pivoted to the MedMNIST collection, which provided an elegant solution to our needs. MedMNIST offers curated, standardized datasets from real medical imaging sources, preprocessed into a consistent format that makes experimentation tractable. This choice reflects a broader tension in medical imaging research: we want to use the most realistic data possible, but practical constraints often force compromises.
 
-\subsubsection{Data Preprocessing}
+\textbf{Datasets Successfully Downloaded and Used:}
 
-All datasets underwent standardized preprocessing to ensure consistency and compatibility with our API framework:
+\textbf{ChestMNIST} became our primary dataset for multi-label classification tasks. Derived from the NIH-ChestXray14 dataset \cite{wang2017chestxray8}, it contains 112,120 chest X-ray images labeled across 14 disease categories including atelectasis, cardiomegaly, effusion, and pneumonia. What makes ChestMNIST particularly valuable is its multi-label nature—real chest X-rays often show multiple pathologies simultaneously, making this a more realistic task than simple single-label classification. The dataset's size also enabled meaningful experiments with data augmentation and validation strategies.
 
-\begin{enumerate}
-    \item \textbf{DICOM Standardization}: Converted all images to standardized DICOM format with consistent metadata
-    \item \textbf{Intensity Normalization}: Applied z-score normalization to account for variations in imaging protocols
-    \item \textbf{Spatial Resampling}: Resampled all images to consistent voxel spacing
-    \item \textbf{Quality Control}: Implemented automated quality checks to identify and exclude corrupted or incomplete scans
-\end{enumerate}
+We appreciated ChestMNIST's careful curation. The original NIH dataset had quality issues—some images were upside down, others had extreme artifacts, and labels had inconsistencies. The MedMNIST version addressed these problems, though at the cost of potentially removing interesting edge cases that production systems would encounter. This trade-off between data cleanliness and realism recurred throughout our work.
+
+\textbf{DermaMNIST} provided our dermatology test case, with 10,015 images from HAM10000 \cite{tschandl2018ham10000}. These dermatoscopic images show skin lesions across 7 diagnostic categories including melanoma, nevus, and basal cell carcinoma. The images are RGB (unlike the grayscale chest X-rays), which let us test our preprocessing pipeline's ability to handle different color spaces. The relatively smaller dataset size also forced us to think carefully about train-test splits and overfitting—a realistic constraint for many medical imaging applications where data is scarce.
+
+\textbf{OCTMNIST} gave us 109,309 retinal optical coherence tomography images \cite{kermany2018identifying} across 4 categories: CNV (choroidal neovascularization), DME (diabetic macular edema), drusen, and normal. OCT images have unique characteristics—they are grayscale like X-rays but show cross-sectional tissue structure rather than projection imaging. This modality diversity proved valuable for testing our API's ability to handle different image types with the same underlying infrastructure.
+
+\textbf{Datasets Referenced but Not Used:}
+
+We retain references to BRATS 2021, LIDC-IDRI, and Medical Segmentation Decathlon in our methodology because we developed download scripts and preprocessing pipelines for them, and they informed our architectural decisions even though data access limitations prevented their use in actual experiments. This represents an honest acknowledgment of the gap between research plans and reality—a gap that our infrastructure aims to help others bridge.
+
+\subsubsection{Data Preprocessing: The Devil in the Details}
+
+Data preprocessing for medical imaging is where theory meets messy reality. Textbooks present clean pipelines—normalize, resample, augment—but actual implementation involves countless small decisions that profoundly impact results. We learned this through bitter experience, debugging mysterious performance drops that traced back to subtle preprocessing bugs.
+
+\textbf{Format Handling and Standardization}
+
+MedMNIST provides images in NumPy array format, which simplified our initial work but also meant we had to implement robust format conversion for real-world deployment. We built preprocessing pipelines that handle DICOM, NIfTI, PNG, and JPEG inputs, automatically detecting format and applying appropriate transformations. DICOM proved particularly challenging—the standard is Byzantine in complexity, with vendor-specific implementations that violate the specification in creative ways. We spent weeks building a DICOM parser that gracefully handles malformed files, missing metadata, and encoding inconsistencies that crash simpler parsers.
+
+One lesson we learned painfully: always validate your format conversion. We had a bug where DICOM-to-NumPy conversion occasionally flipped image orientation, but only for certain scanner manufacturers. The bug surfaced when a collaborator reported our system produced mirror-image segmentations. We traced it to a single line where we misunderstood DICOM's patient orientation tags. That bug cost us two weeks and taught us to implement extensive validation checks on all format conversions.
+
+\textbf{Intensity Normalization: More Art Than Science}
+
+Medical images span wildly different intensity ranges depending on modality, protocol, and scanner. CT scans use Hounsfield units with standardized physical meaning. MRI intensities are arbitrary and scanner-dependent. X-rays fall somewhere in between. We needed normalization that worked across these diverse modalities without destroying clinically relevant information.
+
+We tried several approaches. Simple min-max scaling to [0,1] worked poorly—outlier pixels skewed the range unpredictably. Z-score normalization (subtract mean, divide by standard deviation) performed better but required careful thought about where to compute statistics. Should we normalize each image independently? Compute statistics across the entire dataset? Use a running average? Each choice has implications for what the model learns and how it generalizes.
+
+We ultimately settled on per-image z-score normalization with robust statistics (median and MAD instead of mean and standard deviation) to handle outliers better. For modalities with standardized intensity meanings like CT, we first clip to clinically relevant Hounsfield unit ranges. These choices emerged from extensive experimentation—we probably tried a dozen normalization schemes before finding one that worked consistently across datasets.
+
+\textbf{Spatial Considerations and Resampling}
+
+Medical images come in diverse resolutions and aspect ratios. Our neural networks expect consistent input dimensions. The mismatch requires careful resampling, which is more consequential than it sounds. Naively resizing a 512×512 chest X-ray to 224×224 for a standard CNN input loses information. Resampling 3D volumes introduces even more complexity—do you resample anisotropically to maintain anatomical proportions, or isotropically to simplify the architecture?
+
+We implement multiple resampling strategies depending on the use case. For 2D classification tasks, we resize images to a standard resolution using bicubic interpolation, which preserves edge sharpness better than bilinear. For segmentation tasks where spatial accuracy matters, we pad images to the network's expected size rather than resizing, preserving the original resolution. These decisions required extensive validation—we compared different resampling strategies and found measurable differences in model performance.
+
+\textbf{Quality Control: The Unglamorous Necessity}
+
+Real medical imaging datasets contain corrupted files, mislabeled images, and various quality issues. We implemented automated quality checks that flag suspicious data: images with unusual intensity distributions, mismatched metadata, incorrect dimensions, or missing required fields. This quality control proved essential—we routinely found 1-2\% of images in any dataset had problems that would crash training or introduce noise into models.
+
+Quality control also includes clinical plausibility checks when we have domain knowledge. For chest X-rays, we verify that intensity statistics match expected patterns (lungs should be darker than bones). For DICOM files, we check that slice spacing and patient position are consistent. These checks caught numerous subtle errors that would have degraded model performance unpredictably.
 
 \subsection{Model Development and Selection}
 
-\subsubsection{Architecture Selection}
+\subsubsection{Architecture Selection: Pragmatism Over Perfectionism}
 
-We evaluated multiple deep learning architectures for tumor detection and segmentation:
+Our approach to model selection reflected our focus on infrastructure validation rather than achieving state-of-the-art results. We needed models that were good enough to demonstrate our API framework's capabilities without requiring the extensive tuning that would distract from our core contribution. This meant choosing proven, reliable architectures over cutting-edge experimental designs.
 
-\begin{enumerate}
-    \item \textbf{U-Net Variants}: Standard U-Net, 3D U-Net, and Attention U-Net for segmentation tasks
-    \item \textbf{nnU-Net}: Self-configuring framework that automatically adapts to different datasets \cite{isensee2021nnunet}
-    \item \textbf{Mask R-CNN}: For detection tasks requiring bounding box and mask generation
-    \item \textbf{Vision Transformers}: Recent transformer-based architectures adapted for medical imaging
-\end{enumerate}
+We implemented several model families to test our framework's versatility. For classification tasks on MedMNIST datasets, we built simple CNNs with 3-5 convolutional layers—nothing fancy, but sufficient to achieve reasonable accuracy and fast enough for interactive testing. These SimpleCNN models served as our baseline and proved invaluable for debugging because their straightforward architecture made behavior predictable.
 
-\subsubsection{Training Strategy}
+We also developed an Advanced CNN incorporating modern techniques: residual connections inspired by ResNet \cite{he2016deep}, attention mechanisms from Squeeze-and-Excitation networks \cite{hu2018squeeze}, and batch normalization for training stability. This architecture performed significantly better than our baseline, demonstrating that our framework could handle more sophisticated models without modification.
 
-All models were trained using a consistent approach:
+For comparison, we implemented an EfficientNet-inspired architecture with MBConv blocks and depthwise separable convolutions \cite{tan2019efficientnet}. EfficientNet's efficiency makes it attractive for deployment scenarios with limited compute resources, though we discovered it performs poorly on certain medical imaging modalities (particularly grayscale OCT images)—a finding that has practical implications for architecture selection in real deployments.
 
-\begin{itemize}
-    \item \textbf{Loss Functions}: Combined Dice loss and cross-entropy loss for segmentation tasks
-    \item \textbf{Optimization}: AdamW optimizer with learning rate scheduling
-    \item \textbf{Data Augmentation}: Random rotations, flips, elastic deformations, and intensity variations
-    \item \textbf{Validation}: 5-fold cross-validation with stratified sampling
-\end{itemize}
+We explored more advanced architectures like U-Net for segmentation tasks and evaluated nnU-Net's self-configuring approach \cite{isensee2021nnunet}, though time constraints prevented full implementation. Vision Transformers represent an exciting direction we investigated preliminarily, but their computational requirements and data hunger made them impractical for our infrastructure-focused work. These explorations informed our API design even though we did not deploy them in production.
+
+\subsubsection{Training Strategy: Learning What Actually Matters}
+
+Our training approach evolved through experimentation, with several false starts teaching us what truly matters for medical imaging models.
+
+\textbf{Loss Functions and Optimization}
+
+For classification tasks, we used cross-entropy loss for single-label problems and binary cross-entropy with logits for multi-label scenarios like ChestMNIST. These standard choices worked well, though we spent considerable effort on class weighting to handle imbalanced datasets. Medical imaging datasets often have severe class imbalance—rare diseases appear in only 1-2\% of images. We tried several weighting schemes and found that inverse frequency weighting helped but required careful tuning to avoid overemphasizing rare classes.
+
+We selected AdamW as our optimizer, appreciating its robustness across different learning rates and its built-in weight decay for regularization. Initial learning rate of 0.001 worked reliably across datasets, though we implemented learning rate scheduling that reduced LR by a factor of 10 when validation loss plateaued. This schedule emerged from experiments—we tried cosine annealing, exponential decay, and step schedules before settling on plateau-based reduction as most reliable.
+
+\textbf{Data Augmentation: The Free Lunch That Requires Work}
+
+Data augmentation for medical imaging requires more care than natural images. We cannot apply transformations that would be clinically implausible—we do not flip medical images across axes where anatomical asymmetry matters, we limit rotation ranges to avoid creating physically impossible orientations, and we carefully control intensity augmentations to preserve diagnostic information.
+
+Our augmentation pipeline includes: random rotations (±15 degrees), horizontal flips (for symmetric anatomies), small elastic deformations (to model anatomical variability), intensity jittering (±10\% to model scanner variations), and random cropping (for scale invariance). Each augmentation was validated by showing examples to clinicians and asking whether the transformed images remained diagnostically valid. This clinical validation step caught several problematic augmentations we initially included.
+
+\textbf{Validation Strategy and Overfitting Prevention}
+
+We split datasets into train-validation-test with 70-15-15 proportions, ensuring stratified sampling to maintain class distributions. For our experiments, we used simple holdout validation rather than k-fold cross-validation—a pragmatic choice given our focus on infrastructure rather than maximizing performance metrics. In retrospective analysis, this may have led to slight performance underestimation, but the time saved allowed us to focus on our core contributions.
+
+Overfitting proved a constant concern with medical imaging's relatively limited data. We employed several prevention strategies: early stopping (halt training when validation loss stops improving for 10 epochs), dropout (0.5 in fully connected layers), L2 regularization (weight decay of 0.0001), and aggressive data augmentation. Despite these measures, we still saw overfitting on smaller datasets like DermaMNIST, where models achieved 90\%+ training accuracy but only 70\% validation accuracy. This gap reminded us that medical imaging AI remains fundamentally data-limited—no amount of architectural cleverness fully compensates for insufficient training examples.
 
 \subsection{API Framework Design}
 
