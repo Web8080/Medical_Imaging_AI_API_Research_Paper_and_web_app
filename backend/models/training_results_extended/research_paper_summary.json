@@ -1,0 +1,42 @@
+{
+  "total_experiments": 6,
+  "datasets": [
+    "chestmnist",
+    "octmnist",
+    "dermamnist"
+  ],
+  "models": [
+    "simple",
+    "advanced"
+  ],
+  "total_training_time_hours": 8.634241691894001,
+  "best_results_by_dataset": {
+    "chestmnist": {
+      "model": "simple",
+      "test_accuracy": 0.5318503989658093,
+      "test_f1": 0.0003500370415183414,
+      "epochs": 18,
+      "best_epoch": 8
+    },
+    "octmnist": {
+      "model": "advanced",
+      "test_accuracy": 0.725,
+      "test_f1": 0.6977593059935419,
+      "epochs": 45,
+      "best_epoch": 35
+    },
+    "dermamnist": {
+      "model": "advanced",
+      "test_accuracy": 0.7356608478802993,
+      "test_f1": 0.7056077020274953,
+      "epochs": 18,
+      "best_epoch": 8
+    }
+  },
+  "statistics": {
+    "mean_test_accuracy": 0.6625435441656339,
+    "std_test_accuracy": 0.09268353929827805,
+    "min_test_accuracy": 0.5315829358534302,
+    "max_test_accuracy": 0.7356608478802993
+  }
+}

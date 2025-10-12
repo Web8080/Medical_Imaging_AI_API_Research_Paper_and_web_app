@@ -1,0 +1,146 @@
+{
+  "description": "Extended Training Configuration for Research Paper (50-100 Epochs)",
+  "version": "1.0.0",
+  
+  "experiments": [
+    {
+      "name": "chestmnist_simple_50epochs",
+      "dataset": "chestmnist",
+      "model": "simple",
+      "epochs": 50,
+      "batch_size": 64,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "scheduler": "plateau",
+      "early_stopping": true,
+      "early_stopping_patience": 15
+    },
+    {
+      "name": "chestmnist_advanced_100epochs",
+      "dataset": "chestmnist",
+      "model": "advanced",
+      "epochs": 100,
+      "batch_size": 64,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "scheduler": "cosine",
+      "early_stopping": true,
+      "early_stopping_patience": 20
+    },
+    {
+      "name": "dermamnist_simple_50epochs",
+      "dataset": "dermamnist",
+      "model": "simple",
+      "epochs": 50,
+      "batch_size": 64,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "scheduler": "plateau",
+      "early_stopping": true,
+      "early_stopping_patience": 15
+    },
+    {
+      "name": "dermamnist_advanced_100epochs",
+      "dataset": "dermamnist",
+      "model": "advanced",
+      "epochs": 100,
+      "batch_size": 64,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "scheduler": "cosine",
+      "early_stopping": true,
+      "early_stopping_patience": 20
+    },
+    {
+      "name": "dermamnist_efficientnet_100epochs",
+      "dataset": "dermamnist",
+      "model": "efficientnet",
+      "epochs": 100,
+      "batch_size": 64,
+      "learning_rate": 0.0005,
+      "weight_decay": 0.0001,
+      "scheduler": "cosine",
+      "early_stopping": true,
+      "early_stopping_patience": 20
+    },
+    {
+      "name": "octmnist_simple_50epochs",
+      "dataset": "octmnist",
+      "model": "simple",
+      "epochs": 50,
+      "batch_size": 64,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "scheduler": "plateau",
+      "early_stopping": true,
+      "early_stopping_patience": 15
+    },
+    {
+      "name": "octmnist_advanced_100epochs",
+      "dataset": "octmnist",
+      "model": "advanced",
+      "epochs": 100,
+      "batch_size": 64,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "scheduler": "cosine",
+      "early_stopping": true,
+      "early_stopping_patience": 20
+    },
+    {
+      "name": "octmnist_efficientnet_100epochs",
+      "dataset": "octmnist",
+      "model": "efficientnet",
+      "epochs": 100,
+      "batch_size": 64,
+      "learning_rate": 0.0005,
+      "weight_decay": 0.0001,
+      "scheduler": "cosine",
+      "early_stopping": true,
+      "early_stopping_patience": 20
+    }
+  ],
+  
+  "training_parameters": {
+    "optimizer": "AdamW",
+    "loss_function_classification": "CrossEntropyLoss",
+    "loss_function_multilabel": "BCEWithLogitsLoss",
+    "data_augmentation": "Normalization only (mean=0.5, std=0.5)",
+    "validation_frequency": "Every epoch",
+    "checkpoint_save_frequency": 10
+  },
+  
+  "infrastructure": {
+    "device": "CUDA if available, else CPU",
+    "mixed_precision": false,
+    "num_workers": 4,
+    "pin_memory": true
+  },
+  
+  "evaluation_metrics": {
+    "classification": [
+      "accuracy",
+      "precision",
+      "recall",
+      "f1_score",
+      "confusion_matrix"
+    ],
+    "multilabel": [
+      "accuracy",
+      "precision",
+      "recall",
+      "f1_score"
+    ]
+  },
+  
+  "results_tracking": {
+    "save_training_curves": true,
+    "save_confusion_matrix": true,
+    "save_checkpoints": true,
+    "save_best_model": true,
+    "log_to_file": true
+  }
+}
+
+
+
