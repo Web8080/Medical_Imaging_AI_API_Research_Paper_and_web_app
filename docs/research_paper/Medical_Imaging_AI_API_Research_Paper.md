@@ -837,14 +837,11 @@ Our extended training experiments employed the following rigorous methodology:
 
 #### Training Convergence Analysis
 
-Figure fig:convergence shows validation accuracy progression across all experiments:
+Figure: Validation accuracy progression across all experiments:
 
-figure[H]
+![Validation Accuracy Convergence](figures/comparison_convergence.png)
 
-[width=]{comparison_convergence.png}
-Validation accuracy convergence for all model-dataset combinations. DermaMNIST and OCTMNIST showed smooth convergence, while ChestMNIST plateaued quickly due to task difficulty.
-fig:convergence
-figure
+**Figure**: Validation accuracy convergence for all model-dataset combinations. DermaMNIST and OCTMNIST showed smooth convergence, while ChestMNIST plateaued quickly due to task difficulty.
 
 **Convergence Patterns:**
 - **OCTMNIST**: Demonstrated excellent convergence from 83.5\% (epoch 1) to 92.3\% (epoch 35), with minimal overfitting
@@ -855,20 +852,10 @@ figure
 
 We conducted detailed confusion matrix analysis for single-label classification tasks:
 
-figure[H]
+![DermaMNIST AdvancedCNN Confusion Matrix](figures/confusion_matrix_dermamnist_advanced_50epochs_optimized.png)
+![OCTMNIST AdvancedCNN Confusion Matrix](figures/confusion_matrix_octmnist_advanced_50epochs_optimized.png)
 
-subfigure[b]{0.48}
-    [width=]{confusion_matrix_dermamnist_advanced_50epochs_optimized.png}
-    DermaMNIST AdvancedCNN
-subfigure
-
-subfigure[b]{0.48}
-    [width=]{confusion_matrix_octmnist_advanced_50epochs_optimized.png}
-    OCTMNIST AdvancedCNN
-subfigure
-Confusion matrices revealing per-class performance and error patterns
-fig:confusion_matrices
-figure
+**Figure**: Confusion matrices revealing per-class performance and error patterns
 
 **DermaMNIST Analysis (7 classes):**
 - **Strong Performance**: Class 5 (melanoma) with 1257/1341 correct (93.7\%)
@@ -882,7 +869,14 @@ figure
 
 ### Model Performance Summary: All Experiments
 
-[Table - See LaTeX version for formatting]
+| Dataset | Model | Epochs | Val Acc | Test Acc | F1 Score | Training Time |
+|---------|-------|--------|---------|----------|----------|---------------|
+| ChestMNIST | Advanced | 11 | 54.19% | 53.16% | 0.000 | 171.73 min |
+| ChestMNIST | Simple | 18 | 54.19% | 53.19% | 0.000 | 45.94 min |
+| DermaMNIST | Advanced | 18 | 75.97% | 73.57% | 0.706 | 48.42 min |
+| DermaMNIST | Simple | 30 | 75.47% | 73.32% | 0.695 | 27.71 min |
+| OCTMNIST | Advanced | 45 | 92.32% | 72.50% | 0.698 | 255.59 min |
+| OCTMNIST | Simple | 30 | 91.05% | 71.80% | 0.688 | 68.67 min |
 
 **Performance Comparison: Extended vs. Initial Training**
 
@@ -894,14 +888,11 @@ The extended training experiments validate our initial observations while provid
 
 #### Performance Heatmap Analysis
 
-Figure fig:heatmap visualizes model performance across all dataset-architecture combinations:
+Model performance heatmap across all dataset-architecture combinations:
 
-figure[H]
+![Performance Heatmap](figures/heatmap_performance.png)
 
-[width=0.8]{heatmap_performance.png}
-Performance heatmap showing test accuracy for each model-dataset combination. Darker colors indicate higher performance. Note the consistent performance across Simple and Advanced CNN architectures.
-fig:heatmap
-figure
+**Figure**: Performance heatmap showing test accuracy for each model-dataset combination. Darker colors indicate higher performance. Note the consistent performance across Simple and Advanced CNN architectures.
 
 **Key Observations from Heatmap:**
 - **Dataset Difficulty**: Clear separation between DermaMNIST/OCTMNIST ($$72-74\%) and ChestMNIST ($$53\%)
@@ -917,12 +908,9 @@ Aggregating across all extended training experiments:
 - **SimpleCNN Performance**: 66.10\% ± 9.15\% (competitive with AdvancedCNN)
 - **AdvancedCNN Performance**: 66.41\% ± 9.38\% (marginal 0.31\% improvement)
 
-figure[H]
+![Test Accuracy Comparison](figures/comparison_test_accuracy.png)
 
-[width=0.9]{comparison_test_accuracy.png}
-Test accuracy comparison across all dataset-model combinations. The remarkably similar performance of SimpleCNN and AdvancedCNN across all datasets suggests that at 28×28 resolution, model capacity is not the limiting factor.
-fig:test_accuracy_comparison
-figure
+**Figure**: Test accuracy comparison across all dataset-model combinations. The remarkably similar performance of SimpleCNN and AdvancedCNN across all datasets suggests that at 28×28 resolution, model capacity is not the limiting factor.
 
 ### Key Findings and Insights
 - **Architecture Performance**: Advanced CNN consistently outperformed EfficientNet across datasets
