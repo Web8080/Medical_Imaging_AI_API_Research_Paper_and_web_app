@@ -145,7 +145,11 @@ All datasets are publicly available and properly cited in our research paper.
 
 ## Current Status
 
+<<<<<<< HEAD
 **Fully Functional System**
+=======
+ **Fully Functional System**
+>>>>>>> e3b34eb76da06a5d876dc42fa76a3b6d8ac0ca39
 - API server running with real AI model predictions
 - Streamlit dashboard with interactive visualizations
 - Real-time metrics tracking and system monitoring
@@ -374,6 +378,7 @@ If you use this work in your research, please cite our paper:
 
 ## License
 
+<<<<<<< HEAD
 MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
@@ -387,3 +392,6 @@ MIT License - see [LICENSE](LICENSE) file for details.
 ---
 
 *Last Updated: October 2025 | Research Quality: 9/10 | Publication Ready: Yes*
+=======
+MIT License - see LICENSE file for details.
+>>>>>>> e3b34eb76da06a5d876dc42fa76a3b6d8ac0ca39
