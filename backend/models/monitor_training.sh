@@ -10,17 +10,17 @@ cd /Users/user/API_for_Medical_Imaging/backend/models
 while true; do
     clear
     echo "=========================================="
-    echo "🚀 TRAINING STATUS - $(date '+%H:%M:%S')"
+    echo "TRAINING STATUS - $(date '+%H:%M:%S')"
     echo "=========================================="
     echo ""
     
     # Check if process is running
     if ps aux | grep -E "train_extended_epochs" | grep -v grep > /dev/null; then
-        echo "✅ Status: TRAINING IN PROGRESS"
+        echo "Status: TRAINING IN PROGRESS"
         echo ""
         
         # Show latest epoch info
-        echo "📊 Latest Progress:"
+        echo "Latest Progress:"
         echo "---"
         tail -100 training_extended.log | grep -E "(Epoch [0-9]|Train Loss|Val Loss|Val Acc|completed|best|Early stopping)" | tail -10
         
@@ -29,7 +29,7 @@ while true; do
         
         # Count completed epochs
         COMPLETED=$(grep -c "Val Acc:" training_extended.log 2>/dev/null || echo "0")
-        echo "📈 Epochs completed: $COMPLETED/30 (Experiment 1/6)"
+        echo "Epochs completed: $COMPLETED/30 (Experiment 1/6)"
         
         # Check experiment progress
         if [ -d "training_results_extended" ]; then
@@ -52,6 +52,8 @@ while true; do
     
     sleep 30
 done
+
+
 
 
 

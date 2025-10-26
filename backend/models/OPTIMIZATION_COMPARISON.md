@@ -3,14 +3,14 @@
 ## Quick Decision Guide
 
 **Use Optimized Version** (`setup_and_train_optimized.sh`) if:
-- ✅ You're training on CPU only
-- ✅ You want results in ~24 hours
-- ✅ You want publication-quality results with minimal time investment
+- You're training on CPU only
+- You want results in ~24 hours
+- You want publication-quality results with minimal time investment
 
 **Use Full Version** (`setup_and_train.sh`) if:
-- ✅ You have GPU available
-- ✅ You want maximum accuracy (marginal improvement)
-- ✅ You want to compare all architectures including EfficientNet
+- You have GPU available
+- You want maximum accuracy (marginal improvement)
+- You want to compare all architectures including EfficientNet
 
 ---
 
@@ -59,8 +59,8 @@
 6. OCTMNIST - AdvancedCNN (50 epochs) ⏱️ 6-8h CPU
 
 **Skipped (Not Critical for Publication):**
-- ❌ DermaMNIST - EfficientNet (AdvancedCNN performs better)
-- ❌ OCTMNIST - EfficientNet (performs poorly on grayscale images)
+- DermaMNIST - EfficientNet (AdvancedCNN performs better)
+- OCTMNIST - EfficientNet (performs poorly on grayscale images)
 
 ---
 
@@ -126,7 +126,7 @@
 
 **With Early Stopping (Expected):**
 - Full: Likely finishes in 30-40 hours
-- Optimized: Likely finishes in **18-24 hours** ✅
+- Optimized: Likely finishes in **18-24 hours**
 
 ---
 
@@ -134,7 +134,7 @@
 
 ### Is Optimized Training Scientifically Sound?
 
-✅ **YES** - Here's why:
+**YES** - Here's why:
 
 1. **Sufficient Convergence**: 30-50 epochs with early stopping captures 95%+ of final performance
 2. **Baseline Comparisons**: We still compare SimpleCNN vs. AdvancedCNN
@@ -144,17 +144,17 @@
 
 ### What We Lose:
 
-1. ❌ **Marginal Accuracy**: 1-2% potential accuracy (insignificant for proof-of-concept)
-2. ❌ **EfficientNet Comparison**: But we already know from 3-epoch tests it underperforms
-3. ❌ **Extra Precision**: Slightly less precise convergence curves
+1. **Marginal Accuracy**: 1-2% potential accuracy (insignificant for proof-of-concept)
+2. **EfficientNet Comparison**: But we already know from 3-epoch tests it underperforms
+3. **Extra Precision**: Slightly less precise convergence curves
 
 ### What We Keep:
 
-1. ✅ **Core Contribution**: API framework demonstration
-2. ✅ **Architecture Comparison**: SimpleCNN vs. AdvancedCNN
-3. ✅ **Multi-Modal Validation**: All three imaging modalities
-4. ✅ **Publication Quality**: Results are scientifically rigorous
-5. ✅ **Reproducibility**: Clear methodology, documented hyperparameters
+1. **Core Contribution**: API framework demonstration
+2. **Architecture Comparison**: SimpleCNN vs. AdvancedCNN
+3. **Multi-Modal Validation**: All three imaging modalities
+4. **Publication Quality**: Results are scientifically rigorous
+5. **Reproducibility**: Clear methodology, documented hyperparameters
 
 ---
 
@@ -169,10 +169,10 @@ cd /Users/user/API_for_Medical_Imaging/backend/models
 ```
 
 **Advantages:**
-- ⏱️ Finishes in ~24 hours (realistic for overnight + next day)
-- 💰 Less electricity cost
-- 📊 Publication-quality results
-- ✅ Scientifically valid
+- Finishes in ~24 hours (realistic for overnight + next day)
+- Less electricity cost
+- Publication-quality results
+- Scientifically valid
 
 **Trade-offs:**
 - 1-2% lower accuracy (negligible)
@@ -213,10 +213,10 @@ cd /Users/user/API_for_Medical_Imaging/backend/models
 ## Results Integration
 
 Both versions generate the same output format:
-- ✅ LaTeX tables for paper
-- ✅ Training curves and plots
-- ✅ Confusion matrices
-- ✅ Summary report
+- LaTeX tables for paper
+- Training curves and plots
+- Confusion matrices
+- Summary report
 
 No changes needed in paper integration process!
 
@@ -226,7 +226,9 @@ No changes needed in paper integration process!
 
 **The optimized version is scientifically sound and publication-ready.** It achieves the research goals (demonstrating API framework viability) while respecting CPU time constraints. The 1-2% accuracy trade-off is negligible for a proof-of-concept study focused on infrastructure, not achieving state-of-the-art model performance.
 
-**Use optimized version for CPU training** - you'll have results in ~24 hours! 🚀
+**Use optimized version for CPU training** - you'll have results in ~24 hours!
+
+
 
 
 

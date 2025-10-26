@@ -16,10 +16,10 @@ def main():
     print("🏥 MEDICAL IMAGING AI - QUICK START")
     print("=" * 60)
     
-    print("🚀 Starting services...")
+    print("Starting services...")
     
     # Start API server
-    print("📡 Starting API server...")
+    print("Starting API server...")
     api_process = subprocess.Popen([
         sys.executable, "backend/api/simple_api_server.py"
     ], cwd=os.getcwd())
@@ -27,7 +27,7 @@ def main():
     time.sleep(3)
     
     # Start Streamlit dashboard
-    print("📊 Starting Streamlit dashboard...")
+    print("Starting Streamlit dashboard...")
     streamlit_process = subprocess.Popen([
         sys.executable, "-m", "streamlit", "run", 
         "frontend/streamlit/streamlit_dashboard.py", 
@@ -38,24 +38,24 @@ def main():
     time.sleep(5)
     
     # Open browser
-    print("🌐 Opening browser...")
+    print("Opening browser...")
     webbrowser.open("http://localhost:8501")
     
     print("\n" + "=" * 60)
-    print("✅ SYSTEM READY!")
+    print("SYSTEM READY!")
     print("=" * 60)
-    print("🌐 Streamlit Dashboard: http://localhost:8501")
-    print("📡 API Server: http://localhost:8001")
-    print("🔍 Health Check: http://localhost:8001/health")
+    print("Streamlit Dashboard: http://localhost:8501")
+    print("API Server: http://localhost:8001")
+    print("Health Check: http://localhost:8001/health")
     
-    print("\n🎯 FEATURES AVAILABLE:")
+    print("\nFEATURES AVAILABLE:")
     print("• Upload medical images (PNG, JPG, DICOM)")
     print("• AI-powered analysis and predictions")
     print("• Interactive results visualization")
     print("• DICOM image viewer")
     print("• Results history")
     
-    print("\n📁 ORGANIZED SCRIPTS:")
+    print("\nORGANIZED SCRIPTS:")
     print("• Demo & Testing: organized_scripts/demo_and_testing/")
     print("• UI Launchers: organized_scripts/ui_launchers/")
     print("• API Servers: organized_scripts/api_servers/")
@@ -63,17 +63,17 @@ def main():
     print("• Model Training: organized_scripts/model_training/")
     print("• Visualizations: organized_scripts/visualization/")
     
-    print("\n🎉 Ready to analyze medical images!")
+    print("\nReady to analyze medical images!")
     
     try:
         print("\nPress Ctrl+C to stop all services...")
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
-        print("\n🛑 Shutting down services...")
+        print("\nShutting down services...")
         api_process.terminate()
         streamlit_process.terminate()
-        print("✅ Services stopped.")
+        print("Services stopped.")
 
 if __name__ == "__main__":
     main()

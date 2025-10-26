@@ -216,12 +216,12 @@ rm -rf checkpoints_extended/checkpoint_epoch_*.pth  # Keep only best_model.pth
 
 This extended training addresses the following concerns from the paper audit:
 
-1. ✅ **Proper Training Duration**: 50-100 epochs ensure model convergence
-2. ✅ **Validation Strategy**: Separate validation set with early stopping prevents overfitting
-3. ✅ **Comprehensive Metrics**: Precision, recall, F1-score, not just accuracy
-4. ✅ **Reproducibility**: Fixed random seeds, saved configurations, checkpoint management
-5. ✅ **Transparency**: All hyperparameters documented, training curves saved
-6. ✅ **Statistical Rigor**: Multiple architectures, multiple datasets, error analysis
+1. **Proper Training Duration**: 50-100 epochs ensure model convergence
+2. **Validation Strategy**: Separate validation set with early stopping prevents overfitting
+3. **Comprehensive Metrics**: Precision, recall, F1-score, not just accuracy
+4. **Reproducibility**: Fixed random seeds, saved configurations, checkpoint management
+5. **Transparency**: All hyperparameters documented, training curves saved
+6. **Statistical Rigor**: Multiple architectures, multiple datasets, error analysis
 
 ## Citation
 
