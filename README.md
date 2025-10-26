@@ -11,7 +11,7 @@ The system implements a full-stack solution for medical image analysis, featurin
 - **Real Medical Datasets**: Trained on MedMNIST datasets (ChestMNIST, DermaMNIST, OCTMNIST) with 183,000+ medical images
 - **Docker Deployment**: Complete containerization and cloud deployment configuration
 
-## 📊 Key Research Results
+##  Key Research Results
 
 Our comprehensive training experiments (completed October 2025) demonstrate the viability of accessible medical imaging AI:
 
@@ -119,7 +119,7 @@ All datasets are publicly available and properly cited in our research paper.
 
 ## Current Status
 
-✅ **Fully Functional System**
+ **Fully Functional System**
 - API server running with real AI model predictions
 - Streamlit dashboard with interactive visualizations
 - Real-time metrics tracking and system monitoring
